@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.74/Tone.js"></script>
+	<!-- <script src="lib/p5.min.js"> </script> -->
+	<!-- <script src="bullet.js"> </script> -->
+	<!-- <script src="canon.js"> </script> -->
+	<!-- <script src="sketch.js"> </script> -->
+	<script> 
+	
+	const sampler = new Tone.Sampler({
+		urls: {
+			"C4": "C4.mp3",
+			"D#4": "Ds4.mp3",
+			"F#4": "Fs4.mp3",
+			"A4": "A4.mp3",
+		},
+		release: 1,
+		baseUrl: "https://tonejs.github.io/audio/salamander/",
+	}).toDestination();
+	
+	function play(){
+		Tone.loaded().then(() => {
+			sampler.triggerAttackRelease(["Eb4", "G4", "Bb4"], 4);
+		})
+	}
+	</script>
+</head>
+<body>
+	<div id="sketch-holder">
+	</div>
+	
+	<button onclick="play()">PLAY</button>
+</body
+</html>
