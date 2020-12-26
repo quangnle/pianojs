@@ -1,4 +1,4 @@
-let canon =new Canon(100,100,-30);
+let pianoui = new PianoUI(50,50,150,30);
 
 function setup(){
 	var canvas = createCanvas(640, 480);
@@ -8,14 +8,7 @@ function setup(){
 function draw(){
 	background(255);
 	
-	if (keyIsDown(LEFT_ARROW)) {
-		canon.angle -= 1;
-	}
-	if (keyIsDown(RIGHT_ARROW)) {
-		canon.angle += 1;
-	}
-	
-	canon.draw();
+	pianoui.draw();
 }
 
 function keyPressed(){
