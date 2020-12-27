@@ -15,6 +15,10 @@ function mousePressed(){
 	pianoui.onClicked(mouseX, mouseY);
 }
 
+function touchStarted(){
+	pianoui.onClicked(mouseX, mouseY);
+}
+
 function keyPressed(){
 	
 }
