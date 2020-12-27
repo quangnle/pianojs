@@ -1,3 +1,7 @@
+function isInRegion(x,y,rect){
+	return (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h);
+}
+
 var PianoUI = function(x,y,w,h){
 	this.x = x;
 	this.y = y;
@@ -10,7 +14,7 @@ var PianoUI = function(x,y,w,h){
 	let stepWidth = this.w / 15;
 	for (let i = 0; i < 25; i++){
 		let name = NOTES[i%12];
-		let octave = Math.ceil(i/12);
+		let octave = Math.ceil((i+1)/12);
 		if (name.length == 1){
 			let key = new KeyUI(name,octave,'white',stepWidth*step,0,stepWidth,this.h);
 			this.keys.push(key);
@@ -34,5 +38,29 @@ var PianoUI = function(x,y,w,h){
 				this.keys[i].draw();
 		}
 		pop();
+	}
+	
+	this.onClicked = function(mx, my){
+		let nx = mx - this.x;
+		let ny = my - this.y;
+		
+		let clickedKeys = [];
+		
+		for (let i=0; i<this.keys.length; i++){
+			if (isInRegion(nx, ny, this.keys[i])) {
+				clickedKeys.push(this.keys[i]);
+			}
+		}
+		
+		let playedKey = null;
+		if (clickedKeys.length == 1) {
+			playedKey = clickedKeys[0];
+		} else if (clickedKeys.length == 2) {
+			if (clickedKeys[0].t == 'black') playedKey = clickedKeys[0];
+			else playedKey = clickedKeys[1];
+		}
+		
+		playSound(playedKey.getName(), 1);
+		console.log(playedKey.getName());
 	}
 }

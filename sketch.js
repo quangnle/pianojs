@@ -1,4 +1,4 @@
-let pianoui = new PianoUI(50,50,150,30);
+let pianoui = new PianoUI(50,50,300,100);
 
 function setup(){
 	var canvas = createCanvas(640, 480);
@@ -11,8 +11,10 @@ function draw(){
 	pianoui.draw();
 }
 
+function mousePressed(){
+	pianoui.onClicked(mouseX, mouseY);
+}
+
 function keyPressed(){
-	if (keyCode==ENTER) {
-		canon.fire(50);
-	}
+	
 }

@@ -1,3 +1,14 @@
+const Sampler = new Tone.Sampler({
+		urls: {
+			"C4": "C4.mp3",
+			"D#4": "Ds4.mp3",
+			"F#4": "Fs4.mp3",
+			"A4": "A4.mp3",
+		},
+		release: 1,
+		baseUrl: "https://tonejs.github.io/audio/salamander/",
+	}).toDestination();
+
 var NOTES = ['C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab','A','A#/Bb','B'];
 var MAJOR = [1,3,4.5];
 var MINOR = [1,2.5,4.5];
@@ -7,6 +18,12 @@ var MINOR_7 = [1,2.5,4.5,6]
 var MINOR_M7 = [1,2.5,4.5,6.5];
 var AUG = [1,3,5];
 var DIM = [1,2.5,4];
+
+function playSound(keys, delay){
+	Tone.loaded().then(() => {
+		Sampler.triggerAttackRelease(keys, delay);
+	})
+}
 
 function getKeyPosition(name){
 	for (let i = 0; i < NOTES.length; i++){

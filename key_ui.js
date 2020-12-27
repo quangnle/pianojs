@@ -7,6 +7,10 @@ var KeyUI = function(name,o,t,x,y,w,h){
 	this.w = w;
 	this.h = h;
 	
+	this.getName = function() {
+		return this.name.split("/")[0]+this.o;
+	}
+	
 	this.draw = function(){
 		push();
 		translate(this.x, this.y);
