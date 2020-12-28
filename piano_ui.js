@@ -1,5 +1,5 @@
 function isInRegion(x,y,rect){
-	return (x > rect.x && x < rect.x + rect.w && y > rect.y && y < rect.y + rect.h);
+	return (x > rect.x && x <= rect.x + rect.w && y > rect.y && y <= rect.y + rect.h);
 }
 
 var PianoUI = function(x,y,w,h){
@@ -40,6 +40,7 @@ var PianoUI = function(x,y,w,h){
 		pop();
 	}
 	
+	let playedKey = null;
 	this.onClicked = function(mx, my){
 		let nx = mx - this.x;
 		let ny = my - this.y;
@@ -52,7 +53,6 @@ var PianoUI = function(x,y,w,h){
 			}
 		}
 		
-		let playedKey = null;
 		if (clickedKeys.length == 1) {
 			playedKey = clickedKeys[0];
 		} else if (clickedKeys.length == 2) {
@@ -60,7 +60,17 @@ var PianoUI = function(x,y,w,h){
 			else playedKey = clickedKeys[1];
 		}
 		
-		playSound(playedKey.getName(), 1);
-		console.log(playedKey.getName());
+		if (playedKey != null) {
+			playSound(playedKey.getName(), 1);
+			playedKey.state = 1;
+			console.log(playedKey.getName());
+		}
+	}
+	
+	this.onReleased = function(){
+		if (playedKey != null){
+			playedKey.state = 0;
+			playedKey = null;
+		}
 	}
 }
