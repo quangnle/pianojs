@@ -22,7 +22,7 @@ function touchStarted(){
 	pianoui.onClicked(mouseX, mouseY);
 }
 
-function touchEnd(){
+function touchEnded(){
 	pianoui.onReleased();
 }
 
