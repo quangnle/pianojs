@@ -1,3 +1,5 @@
+const Vol = new Tone.Volume().toDestination();
+Vol.volume.value = 5;	
 const Sampler = new Tone.Sampler({
 		urls: {
 			"C4": "C4.mp3",
@@ -7,7 +9,10 @@ const Sampler = new Tone.Sampler({
 		},
 		release: 1,
 		baseUrl: "https://tonejs.github.io/audio/salamander/",
-	}).toDestination();
+	}).connect(Vol)
+	.toDestination();
+
+
 
 var NOTES = ['C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab','A','A#/Bb','B'];
 var MAJOR = [1,3,4.5];
