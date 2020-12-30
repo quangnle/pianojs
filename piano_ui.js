@@ -2,19 +2,19 @@ function isInRegion(x,y,rect){
 	return (x > rect.x && x <= rect.x + rect.w && y > rect.y && y <= rect.y + rect.h);
 }
 
-var PianoUI = function(x,y,w,h){
+var PianoUI = function(x,y,w,h,o){
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
-	
+	this.o = o;
 	this.keys = [];
 	
 	let step = 0;
 	let stepWidth = this.w / 15;
 	for (let i = 0; i < 25; i++){
 		let name = NOTES[i%12];
-		let octave = Math.ceil((i+1)/12);
+		let octave = Math.ceil((i+1)/12) + this.o;
 		if (name.length == 1){
 			let key = new KeyUI(name,octave,'white',stepWidth*step,0,stepWidth,this.h);
 			this.keys.push(key);
@@ -23,6 +23,20 @@ var PianoUI = function(x,y,w,h){
 			let key = new KeyUI(name,octave,'black',stepWidth*(step-0.25),0,stepWidth>>1,this.h>>1);
 			this.keys.push(key);
 		}			
+	}
+	
+	this.incOct = function(){
+		this.o++;
+		for (let i=0; i<this.keys.length; i++){
+			this.keys[i].o++;
+		}
+	}
+	
+	this.decOct = function(){
+		this.o--;
+		for (let i=0; i<this.keys.length; i++){
+			this.keys[i].o--;
+		}
 	}
 	
 	this.draw = function(){
