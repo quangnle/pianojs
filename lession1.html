@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.74/Tone.js"></script>
+	<script src="definitions.js"> </script>
+	<script>
+	let nQuestion = 10;
+	let curQuestion = 0;
+	let chordNo = Math.floor(Math.random() * 12);
+	let chord = NOTES[chordNo];
+	let modify = Math.floor(Math.random() * 12) + 1;
+	let nRight = 0;
+	
+	function next(){
+		curQuestion  = curQuestion % nQuestion; 
+		let question = document.getElementById("q");
+		let answer = document.getElementById("ans");
+		let btn = document.getElementById("btn");
+		if (getKeyPosition(answer.value) == getKeyPosition(transpose(chord, modify * 0.5).split("/")[0]) && curQuestion > 0) nRight++;
+	
+		chordNo = Math.floor(Math.random() * 12);
+		chord = NOTES[chordNo];
+		modify = Math.floor(Math.random() * 12) + 1;
+		question.innerHTML = chord + " + " + (modify * 0.5) + " = ";
+		curQuestion ++;
+		if (curQuestion == nQuestion) {
+			btn.innerHTML = "Done";
+		} else {
+			btn.innerHTML = "Next (" + nRight + "/" + nQuestion + ")";
+		}
+	}
+	</script>
+</head>
+<body>
+	<p id="q"></p><input id="ans" type="text" value="" width="3"/><button id="btn" onclick="next()"></button>
+	<script>
+	next();
+	</script>
+</body
+</html>

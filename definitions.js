@@ -14,15 +14,15 @@ const Sampler = new Tone.Sampler({
 
 
 
-var NOTES = ['C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab','A','A#/Bb','B'];
-var MAJOR = [1,3,4.5];
-var MINOR = [1,2.5,4.5];
-var MAJOR_7 = [1,3,4.5,6]
-var MAJOR_M7 = [1,3,4.5,6.5];
-var MINOR_7 = [1,2.5,4.5,6]
-var MINOR_M7 = [1,2.5,4.5,6.5];
-var AUG = [1,3,5];
-var DIM = [1,2.5,4];
+const NOTES = ['C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab','A','A#/Bb','B'];
+const MAJOR = [1,3,4.5];
+const MINOR = [1,2.5,4.5];
+const MAJOR_7 = [1,3,4.5,6]
+const MAJOR_M7 = [1,3,4.5,6.5];
+const MINOR_7 = [1,2.5,4.5,6]
+const MINOR_M7 = [1,2.5,4.5,6.5];
+const AUG = [1,3,5];
+const DIM = [1,2.5,4];
 
 function playSound(keys, delay){
 	Tone.loaded().then(() => {
@@ -31,12 +31,18 @@ function playSound(keys, delay){
 }
 
 function getKeyPosition(name){
+	name = name.split('/')[0];
 	for (let i = 0; i < NOTES.length; i++){
 		let names = NOTES[i].split('/');
 		for(let j = 0; j < names.length; j++) {
 			if (name == names[j]) return i;
 		}
 	}
+}
+
+function transpose(note, val){
+	let pos = getKeyPosition(note);
+	return NOTES[(pos + (val * 2)) % NOTES.length];
 }
 
 function getKeysFromChord(name){
