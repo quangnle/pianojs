@@ -31,6 +31,8 @@
 			
 			if (getKeyPosition(answer.value) == getKeyPosition(shiftedChord) && curQuestion > 0) nRight++;
 		
+			chordNo = Math.floor(Math.random() * 12);
+			chord = NOTES[chordNo];
 			modify = Math.floor(Math.random() * 12) + 1;
 			shift = Math.floor(Math.random() * 12) + 1;
 			shiftedChord = NOTES[(chordNo + modify + shift) % NOTES.length];
