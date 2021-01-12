@@ -9,9 +9,12 @@
 	let curQuestion = 0;
 	let chordNo = Math.floor(Math.random() * 12);
 	let chord = NOTES[chordNo];
-	let modify = Math.floor(Math.random() * 24) - 12;
+	let modify = Math.floor(Math.random() * 12) + 1;
+	let shift = Math.floor(Math.random() * 12) + 1;
+	let shiftedChord = NOTES[(chordNo + modify + shift) % NOTES.length];
 	let nRight = 0;
 	let startTime, endTime;
+	
 	function next(){
 		if (curQuestion == nQuestion) {
 			endTime = Math.round(new Date().getTime()/1000);
@@ -25,19 +28,26 @@
 			let question = document.getElementById("q");
 			let answer = document.getElementById("ans");
 			let btn = document.getElementById("btn");
-			if (getKeyPosition(answer.value) == getKeyPosition(transpose(chord, modify * 0.5).split("/")[0]) && curQuestion > 0) nRight++;
+			
+			if (getKeyPosition(answer.value) == getKeyPosition(shiftedChord) && curQuestion > 0) nRight++;
 		
 			chordNo = Math.floor(Math.random() * 12);
 			chord = NOTES[chordNo];
-			modify = Math.floor(Math.random() * 24) - 12;
+			modify = Math.floor(Math.random() * 12) + 1;
+			shift = Math.floor(Math.random() * 12) + 1;
+			shiftedChord = NOTES[(chordNo + modify + shift) % NOTES.length];
 			
-			let decinSt = " + ";
-			if (modify < 0) decinSt = " - ";
+			console.log(chordNo + " ~> " + modify + " ; " + shift + " ~> " + getKeyPosition(shiftedChord));
+			console.log(getKeyPosition(answer.value) + " ~ " + shiftedChord + ":" + getKeyPosition(shiftedChord));
 			
-			question.innerHTML = (curQuestion+1) + ">> " + chord + decinSt + Math.abs(modify * 0.5) + " = ";
+			question.innerHTML = (curQuestion+1) + ">> " + 
+									chord + " => " + transpose(chord, modify * 0.5) + 
+									" is " +
+									transpose(chord, shift * 0.5) + " => ?";
 			
 			curQuestion ++;
 			btn.innerHTML = "Next (" + nRight + "/" + nQuestion + ")";
+			answer.value = "";
 		}
 	}
 	</script>

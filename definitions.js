@@ -42,7 +42,7 @@ function getKeyPosition(name){
 
 function transpose(note, val){
 	let pos = getKeyPosition(note);
-	return NOTES[(pos + (val * 2)) % NOTES.length];
+	return NOTES[(pos + NOTES.length + (val * 2)) % NOTES.length];
 }
 
 function getKeysFromChord(name){

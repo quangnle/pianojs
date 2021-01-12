@@ -26,9 +26,7 @@
 			let answer = document.getElementById("ans");
 			let btn = document.getElementById("btn");
 			if (getKeyPosition(answer.value) == getKeyPosition(transpose(chord, modify * 0.5).split("/")[0]) && curQuestion > 0) nRight++;
-		
-			chordNo = Math.floor(Math.random() * 12);
-			chord = NOTES[chordNo];
+			
 			modify = Math.floor(Math.random() * 24) - 12;
 			
 			let decinSt = " + ";
@@ -44,9 +42,9 @@
 </head>
 <body>
 	<p id="q"></p><input id="ans" type="text" value="" width="3"/><button id="btn" onclick="next()"></button>
+	<p id="result"></p>
 	<script>
 	next();
 	</script>
-	<p id="result"></p>
 </body
 </html>
