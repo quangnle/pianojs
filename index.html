@@ -9,11 +9,69 @@
 	<script src="key_ui.js"> </script>
 	<script src="piano_ui.js"> </script>
 	<script src="sketch.js"> </script>
+	<script>
+	const MajChords = [['','7','M7'], ['m','m7',''], ['m','7',''], ['','m','#dim'], ['','7','m7','aug'], ['m','7'], ['dim','m7b5','7']];
+	
+	function btnString(chord){
+		return "<button onclick=\"playChord('" + chord + "', 1)\">" + chord + "</button>";
+	}
+	
+	function colString(note, group){
+		let st = "<td>";
+		for (let i = 0; i < group.length; i++){
+			let chord = note.split('/')[0] + group[i];
+			if (chord.indexOf('##') >= 0){
+				chord = transpose(note, 0.5).split('/')[0] + 'dim';
+			}
+			chord = chord.replace('B#', 'C');
+			chord = chord.replace('E#', 'F');
+			st += btnString(chord); 
+		}
+		st += "</td>";
+		return st;
+	}
+	
+	function rowString(note){
+		let st = "<tr>";
+		st += colString(note, MajChords[0]);
+		st += colString(transpose(note, 1), MajChords[1]);
+		st += colString(transpose(note, 2), MajChords[2]);
+		st += colString(transpose(note, 2.5), MajChords[3]);
+		st += colString(transpose(note, 3.5), MajChords[4]);
+		st += colString(transpose(note, 4.5), MajChords[5]);
+		st += colString(transpose(note, 5.5), MajChords[6]);
+		st += "</tr>";
+		return st;
+	}
+	
+	function writeRows(){
+		let st = "";
+		for (let i=0; i< NOTES.length; i++){
+			let note = NOTES[i].split('/')[0];
+			st += rowString(note);
+		}
+		
+		document.write(st);
+	}
+	</script>
 </head>
 <body>
 	<div id="sketch-holder">
 	</div>
 	
-	<button onclick="playSound(['C4'], 1)">PLAY</button>
+	<table border=1>
+		<tr>
+			<th>I</th>
+			<th>II</th>
+			<th>III</th>
+			<th>IV</th>
+			<th>V</th>
+			<th>VI</th>
+			<th>VII</th>
+		</tr>
+		<script>
+		writeRows();
+		</script>		
+	</table>
 </body
 </html>
