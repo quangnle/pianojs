@@ -1,4 +1,4 @@
-let pianoui = new PianoUI(50,50,300,100,3);
+let pianoui = new PianoUI(50,50,400,100,3,3);
 
 function setup(){
 	var canvas = createCanvas(640, 480);

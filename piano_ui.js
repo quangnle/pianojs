@@ -2,17 +2,19 @@ function isInRegion(x,y,rect){
 	return (x > rect.x && x <= rect.x + rect.w && y > rect.y && y <= rect.y + rect.h);
 }
 
-var PianoUI = function(x,y,w,h,o){
+var PianoUI = function(x,y,w,h,o,nOctave){
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
 	this.o = o;
+	this.nOctave = nOctave;
 	this.keys = [];
+	this.currentTranspose = 0;
 	
 	let step = 0;
-	let stepWidth = this.w / 15;
-	for (let i = 0; i < 25; i++){
+	let stepWidth = this.w / (nOctave * 7 + 1);
+	for (let i = 0; i < (nOctave*12 + 1); i++){
 		let name = NOTES[i%12];
 		let octave = Math.ceil((i+1)/12) + this.o;
 		if (name.length == 1){
@@ -42,6 +44,10 @@ var PianoUI = function(x,y,w,h,o){
 	this.draw = function(){
 		push();
 		translate(this.x, this.y);
+
+		fill(0);
+		rect(0,-20,this.w, 20);
+
 		for (let i = 0; i< this.keys.length; i++){
 			if (this.keys[i].t == 'white')
 				this.keys[i].draw();
@@ -52,6 +58,23 @@ var PianoUI = function(x,y,w,h,o){
 				this.keys[i].draw();
 		}
 		pop();
+	}
+
+	this.transposeUp = function(){
+		if (this.currentTranspose < 6.5) {
+			this.currentTranspose += 0.5;	
+		}
+	}
+
+	this.transposeDown = function(){
+		if (this.currentTranspose > -6.0) {
+			this.currentTranspose -= 0.5;	
+		}	
+	}
+
+	this.playChord  = function(chordName){
+		//var keys = definitions.getKeys(chordName);
+
 	}
 	
 	let playedKey = null;
@@ -86,5 +109,13 @@ var PianoUI = function(x,y,w,h,o){
 			playedKey.state = 0;
 			playedKey = null;
 		}
+	}
+
+	this.onKeyDown = function(keys){
+
+	}
+
+	this.onKeyUp = function(keys){
+
 	}
 }
