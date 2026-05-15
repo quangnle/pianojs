@@ -1,3 +1,4 @@
+// Sync with root definitions.js
 const Vol = new Tone.Volume().toDestination();
 Vol.volume.value = 5;
 const Sampler = new Tone.Sampler({

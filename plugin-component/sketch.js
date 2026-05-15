@@ -1,7 +1,8 @@
-let pianoui = new PianoUI(20, 24, 600, 100, 3, 3);
+// Sync with root sketch.js — 3-octave piano for extension popup
+let pianoui = new PianoUI(12, 24, 600, 88, 3, 3);
 
 function setup() {
-	const canvas = createCanvas(640, 148);
+	const canvas = createCanvas(624, 140);
 	canvas.parent('sketch-holder');
 	window.pianoui = pianoui;
 	pianoui.currentTranspose = getGlobalTranspose();

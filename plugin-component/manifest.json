@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Piano JS",
+  "version": "1.0.0",
+  "description": "Compact piano with diatonic chords and transpose",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Piano JS",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "host_permissions": ["https://tonejs.github.io/*"]
+}

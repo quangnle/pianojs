@@ -1,0 +1,272 @@
+:root {
+	--bg-deep: #0a1610;
+	--bg-panel: #132818;
+	--bg-panel-hover: #1a3324;
+	--accent: #2d6a4f;
+	--accent-bright: #52b788;
+	--accent-glow: rgba(82, 183, 136, 0.35);
+	--text: #d8f3dc;
+	--text-muted: #95d5b2;
+	--border: #40916c;
+	--danger: #e76f51;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+	font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+	background: linear-gradient(160deg, var(--bg-deep) 0%, #0f2418 40%, var(--bg-panel) 100%);
+	color: var(--text);
+}
+
+body {
+	padding: 1.25rem 1rem 2rem;
+}
+
+.app-header {
+	text-align: center;
+	margin-bottom: 1rem;
+}
+
+.app-header h1 {
+	margin: 0;
+	font-size: 1.75rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	background: linear-gradient(90deg, var(--text-muted), var(--accent-bright));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.app-header p {
+	margin: 0.35rem 0 0;
+	font-size: 0.85rem;
+	color: var(--text-muted);
+}
+
+.piano-panel {
+	background: linear-gradient(145deg, rgba(19, 40, 24, 0.95), rgba(10, 22, 16, 0.9));
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 0.75rem;
+	margin-bottom: 1rem;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(82, 183, 136, 0.12);
+}
+
+#sketch-holder {
+	display: flex;
+	justify-content: center;
+	overflow: hidden;
+	border-radius: 8px;
+}
+
+#sketch-holder canvas {
+	display: block;
+	border-radius: 6px;
+	max-width: 100%;
+	height: auto;
+}
+
+.transpose-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+	padding: 0.65rem 1rem;
+	background: var(--bg-panel);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+}
+
+.transpose-bar label {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.transpose-bar button {
+	width: 2.5rem;
+	height: 2.5rem;
+	border: 1px solid var(--accent);
+	border-radius: 8px;
+	background: var(--bg-deep);
+	color: var(--accent-bright);
+	font-size: 1.25rem;
+	cursor: pointer;
+	transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+
+.transpose-bar button:hover {
+	background: var(--accent);
+	box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.transpose-bar button:active {
+	transform: scale(0.96);
+}
+
+#transpose-value {
+	min-width: 3rem;
+	text-align: center;
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: var(--accent-bright);
+}
+
+.degree-section {
+	margin-bottom: 1.25rem;
+}
+
+.degree-section h2,
+.chord-section h2 {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--text-muted);
+	margin: 0 0 0.6rem;
+}
+
+#degree-chords {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 0.4rem;
+}
+
+.degree-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.2rem;
+	padding: 0.5rem 0.25rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--bg-panel);
+	color: var(--text);
+	cursor: pointer;
+	transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.degree-btn:hover {
+	background: var(--bg-panel-hover);
+	border-color: var(--accent-bright);
+	box-shadow: 0 0 14px var(--accent-glow);
+}
+
+.degree-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	color: var(--accent-bright);
+}
+
+.degree-chord {
+	font-size: 0.65rem;
+	color: var(--text-muted);
+}
+
+.chord-section {
+	background: linear-gradient(145deg, rgba(19, 40, 24, 0.9), rgba(10, 22, 16, 0.85));
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 1rem;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.table-wrap {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+#chord-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.75rem;
+}
+
+#chord-table th {
+	position: sticky;
+	top: 0;
+	background: var(--accent);
+	color: var(--text);
+	padding: 0.5rem 0.35rem;
+	border: 1px solid var(--border);
+	z-index: 1;
+}
+
+#chord-table th.row-key {
+	background: var(--bg-deep);
+	left: 0;
+	z-index: 2;
+}
+
+#chord-table td {
+	padding: 0.35rem;
+	border: 1px solid rgba(64, 145, 108, 0.35);
+	vertical-align: middle;
+}
+
+#chord-table tbody tr:nth-child(even) td {
+	background: rgba(19, 40, 24, 0.5);
+}
+
+#chord-table tbody tr:hover td {
+	background: rgba(45, 106, 79, 0.25);
+}
+
+.chord-btn {
+	display: inline-block;
+	margin: 0.15rem;
+	padding: 0.3rem 0.45rem;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	background: var(--bg-deep);
+	color: var(--text-muted);
+	font-size: 0.7rem;
+	cursor: pointer;
+	transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+
+.chord-btn:hover {
+	background: var(--accent);
+	color: var(--text);
+	box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.chord-btn.active {
+	background: var(--accent);
+	border-color: var(--accent-bright);
+	color: var(--text);
+	box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.current-key-label {
+	color: var(--accent-bright);
+	font-weight: 600;
+	-webkit-text-fill-color: var(--accent-bright);
+}
+
+@media (max-width: 640px) {
+	body {
+		padding: 0.75rem 0.5rem 1.5rem;
+	}
+
+	#degree-chords {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	#degree-chords .degree-btn:nth-child(n + 5) {
+		grid-column: span 1;
+	}
+
+	.transpose-bar {
+		gap: 0.75rem;
+	}
+}

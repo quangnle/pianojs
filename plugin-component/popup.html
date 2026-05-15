@@ -3,22 +3,14 @@
 
 <head>
 	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Piano JS</title>
-	<link rel="stylesheet" href="styles.css" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.74/Tone.js"></script>
-	<script src="lib/p5.min.js"></script>
-	<script src="definitions.js"></script>
-	<script src="key_ui.js"></script>
-	<script src="piano_ui.js"></script>
-	<script src="sketch.js"></script>
-	<script src="chords-ui.js"></script>
+	<link rel="stylesheet" href="popup.css" />
 </head>
 
 <body>
-	<header class="app-header">
+	<header class="popup-header">
 		<h1>Piano JS</h1>
-		<p>Interactive piano &amp; diatonic chords</p>
+		<p id="load-status" class="load-status">Loading sounds…</p>
 	</header>
 
 	<section class="piano-panel">
@@ -26,14 +18,14 @@
 	</section>
 
 	<div class="transpose-bar">
-		<label for="transpose-value">Transpose</label>
+		<label>Transpose</label>
 		<button type="button" id="transpose-down" aria-label="Transpose down">−</button>
 		<span id="transpose-value">0</span>
 		<button type="button" id="transpose-up" aria-label="Transpose up">+</button>
 	</div>
 
 	<section class="degree-section">
-		<h2>Scale degrees (current key)</h2>
+		<h2>Scale degrees</h2>
 		<div id="degree-chords"></div>
 	</section>
 
@@ -57,6 +49,17 @@
 			</table>
 		</div>
 	</section>
+
+	<p class="footer-hint">Click piano keys or chords to play</p>
+
+	<script src="lib/Tone.min.js"></script>
+	<script src="lib/p5.min.js"></script>
+	<script src="definitions.js"></script>
+	<script src="key_ui.js"></script>
+	<script src="piano_ui.js"></script>
+	<script src="sketch.js"></script>
+	<script src="chords-ui.js"></script>
+	<script src="popup.js"></script>
 </body>
 
 </html>
