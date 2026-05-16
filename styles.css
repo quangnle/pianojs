@@ -65,13 +65,132 @@ body {
 	justify-content: center;
 	overflow: hidden;
 	border-radius: 8px;
+	width: 100%;
+	max-width: 640px;
+	margin: 0 auto;
 }
 
-#sketch-holder canvas {
-	display: block;
-	border-radius: 6px;
-	max-width: 100%;
-	height: auto;
+/* —— DOM piano (replaces p5 canvas) —— */
+.piano-root {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	border-radius: 8px;
+	overflow: hidden;
+	background: #0d1f12;
+	border: 1px solid rgba(64, 145, 108, 0.35);
+}
+
+.piano-transpose-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 1.35rem;
+	padding: 0.2rem 0.35rem;
+	background: #132818;
+	border-radius: 6px 6px 0 0;
+}
+
+.piano-transpose-badge {
+	font-size: 0.65rem;
+	font-weight: 600;
+	color: #52b788;
+	letter-spacing: 0.02em;
+}
+
+.piano-keys-stage {
+	position: relative;
+	width: 100%;
+	min-height: clamp(5.5rem, 28vw, 6.75rem);
+	touch-action: manipulation;
+}
+
+.piano-whites {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	min-height: inherit;
+}
+
+.piano-blacks {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 62%;
+	pointer-events: none;
+}
+
+.piano-blacks .piano-key {
+	pointer-events: auto;
+}
+
+.piano-key {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	border: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	box-sizing: border-box;
+}
+
+.piano-key--white {
+	flex: 1 1 0;
+	min-width: 0;
+	border-radius: 0 0 4px 4px;
+	background: linear-gradient(180deg, #f4fcf5 0%, #e8f5e9 35%, #dcefe0 100%);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+	border-right: 1px solid #40916c;
+	border-bottom: 2px solid #2d6a4f;
+}
+
+.piano-key--white:first-child {
+	border-left: 1px solid #40916c;
+}
+
+.piano-key--white:active,
+.piano-key--white.is-pressed {
+	background: linear-gradient(180deg, #d8f3dc 0%, #c3e6cb 100%);
+}
+
+.piano-key--black {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	border-radius: 0 0 3px 3px;
+	background: linear-gradient(180deg, #2d4a3e 0%, #1b4332 45%, #0f2418 100%);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+	border: 1px solid #0a1610;
+	border-top: none;
+	z-index: 2;
+}
+
+.piano-key--black:active,
+.piano-key--black.is-pressed {
+	background: linear-gradient(180deg, #40916c 0%, #1b4332 100%);
+}
+
+.piano-key--white.is-highlighted::after,
+.piano-key--black.is-highlighted::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 0.55rem;
+	height: 0.55rem;
+	border-radius: 50%;
+	background: radial-gradient(circle, #52b788 0%, #2d6a4f 100%);
+	pointer-events: none;
+}
+
+.piano-key--white.is-highlighted::after {
+	bottom: 18%;
+}
+
+.piano-key--black.is-highlighted::after {
+	bottom: 22%;
 }
 
 .transpose-bar {

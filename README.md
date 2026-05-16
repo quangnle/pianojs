@@ -1,6 +1,6 @@
 # Piano JS
 
-A mini library for demo of using p5js and Tone.js, runnable on mobile devices.
+A mini library for demo of using Tone.js with an HTML/CSS piano keyboard, runnable on mobile devices.
 
 Written by Quang Le
 
@@ -10,7 +10,7 @@ Open [index.html](index.html) in a browser (local server recommended for audio s
 
 Features:
 
-- Interactive piano keyboard (p5.js canvas)
+- Interactive piano keyboard (HTML/CSS, no canvas framework)
 - Global transpose in half-step increments (±0.5 tone per click)
 - Seven diatonic chord buttons for the current key (I–VII)
 - Jazz chord reference for the current key (extensions, altered dominants, sus, 6/9, etc.)
@@ -27,4 +27,4 @@ The extension lives in [plugin-component/](plugin-component/).
 4. Select the `plugin-component` folder in this repo
 5. Click the extension icon to open the piano popup
 
-The popup includes a compact one-octave piano, transpose controls, seven scale-degree chord buttons, and the same jazz chord table as the web app (scrollable). Audio samples load from [tonejs.github.io](https://tonejs.github.io/audio/salamander/) (requires network on first use).
+The popup includes the same HTML keyboard (multi-octave), transpose controls, scale-degree slots with drag-from-library chords, and the same jazz chord table as the web app (scrollable). Audio samples load from [tonejs.github.io](https://tonejs.github.io/audio/salamander/) (requires network on first use).
