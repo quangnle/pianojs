@@ -127,7 +127,7 @@ body {
 }
 
 .degree-section h2,
-.chord-section h2 {
+.chord-section-head {
 	font-size: 0.75rem;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
@@ -135,41 +135,245 @@ body {
 	margin: 0 0 0.6rem;
 }
 
-#degree-chords {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 0.4rem;
+.degree-hint {
+	margin: 0 0 0.65rem;
+	font-size: 0.72rem;
+	line-height: 1.45;
+	color: var(--text-muted);
 }
 
-.degree-btn {
+.degree-hint strong {
+	color: var(--accent-bright);
+}
+
+#degree-chords {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 0.4rem;
+	align-items: stretch;
+}
+
+.degree-cell {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	gap: 0.2rem;
-	padding: 0.5rem 0.25rem;
+	align-items: stretch;
+	gap: 0.25rem;
+	padding: 0.45rem 0.2rem;
 	border: 1px solid var(--border);
 	border-radius: 8px;
 	background: var(--bg-panel);
 	color: var(--text);
-	cursor: pointer;
+	min-width: 0;
 	transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
 
-.degree-btn:hover {
+.degree-cell:hover {
 	background: var(--bg-panel-hover);
 	border-color: var(--accent-bright);
 	box-shadow: 0 0 14px var(--accent-glow);
 }
 
 .degree-label {
+	align-self: center;
 	font-size: 0.7rem;
 	font-weight: 700;
 	color: var(--accent-bright);
 }
 
-.degree-chord {
-	font-size: 0.65rem;
+.degree-slot-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	width: 100%;
+}
+
+.degree-slot-row {
+	display: flex;
+	align-items: center;
+	gap: 0.2rem;
+	width: 100%;
+	min-width: 0;
+}
+
+.degree-slot-btn {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	padding: 0.28rem 0.2rem;
+	border: 1px solid rgba(64, 145, 108, 0.45);
+	border-radius: 6px;
+	background: var(--bg-deep);
 	color: var(--text-muted);
+	font-size: 0.62rem;
+	font-family: inherit;
+	cursor: pointer;
+	transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+
+.degree-slot-btn:hover {
+	background: var(--accent);
+	border-color: var(--accent-bright);
+	color: var(--text);
+	box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.slot-remove {
+	flex: 0 0 auto;
+	width: 1.35rem;
+	height: 1.35rem;
+	padding: 0;
+	border: 1px solid rgba(231, 111, 81, 0.5);
+	border-radius: 6px;
+	background: rgba(231, 111, 81, 0.12);
+	color: var(--danger);
+	font-size: 0.85rem;
+	line-height: 1;
+	cursor: pointer;
+	transition: background 0.12s, transform 0.1s;
+}
+
+.slot-remove:hover {
+	background: rgba(231, 111, 81, 0.28);
+}
+
+.slot-remove:active {
+	transform: scale(0.94);
+}
+
+.degree-drop-target {
+	margin-top: 0.1rem;
+	padding: 0.35rem 0.25rem;
+	border: 1px dashed rgba(64, 145, 108, 0.55);
+	border-radius: 6px;
+	background: rgba(10, 22, 16, 0.45);
+	font-size: 0.62rem;
+	color: var(--text-muted);
+	cursor: pointer;
+	text-align: center;
+	transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.degree-drop-target .drop-target-plus {
+	font-weight: 700;
+	color: var(--accent-bright);
+	margin-right: 0.2rem;
+}
+
+.degree-drop-target .drop-target-hint {
+	display: block;
+	margin-top: 0.2rem;
+	font-size: 0.58rem;
+	line-height: 1.25;
+}
+
+.degree-drop-target .drop-target-hint.muted {
+	opacity: 0.75;
+}
+
+.degree-drop-target.drop-target-active {
+	border-color: var(--accent-bright);
+	box-shadow: 0 0 0 1px rgba(82, 183, 136, 0.25);
+}
+
+.degree-drop-target.degree-drop-hover {
+	background: rgba(45, 106, 79, 0.35);
+	border-color: var(--accent-bright);
+	border-style: solid;
+}
+
+.chord-section-head {
+	margin: 0 0 0.5rem;
+	padding: 0;
+	border: none;
+}
+
+.accordion-trigger {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	margin: 0;
+	padding: 0.35rem 0.25rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--bg-deep);
+	color: var(--text);
+	font: inherit;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.accordion-trigger:hover {
+	background: var(--bg-panel-hover);
+	border-color: var(--accent-bright);
+}
+
+.accordion-chevron {
+	display: inline-block;
+	flex: 0 0 auto;
+	width: 1.25rem;
+	text-align: center;
+	color: var(--accent-bright);
+	transition: transform 0.2s ease;
+}
+
+.chord-section.is-collapsed .accordion-chevron {
+	transform: rotate(-90deg);
+}
+
+.accordion-title {
+	flex: 1;
+	min-width: 0;
+}
+
+.jazz-chords-panel {
+	max-height: 2000px;
+	opacity: 1;
+	overflow: hidden;
+	transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease;
+}
+
+.chord-section.is-collapsed .jazz-chords-panel {
+	max-height: 0;
+	opacity: 0;
+	margin: 0;
+	padding: 0;
+	pointer-events: none;
+}
+
+.jazz-hint {
+	margin: 0 0 0.65rem;
+	font-size: 0.72rem;
+	line-height: 1.45;
+	color: var(--text-muted);
+}
+
+.jazz-hint strong {
+	color: var(--accent-bright);
+}
+
+.chord-lib-btn {
+	cursor: grab;
+	user-select: none;
+}
+
+.chord-lib-btn:active {
+	cursor: grabbing;
+}
+
+.chord-lib-btn.lib-picked {
+	outline: 2px solid var(--accent-bright);
+	outline-offset: 1px;
+	box-shadow: 0 0 12px var(--accent-glow);
+}
+
+body.chord-drag-active {
+	cursor: grabbing;
 }
 
 .chord-section {
@@ -272,10 +476,10 @@ body {
 		padding-inline: 0.35rem;
 	}
 
-	#degree-chords .degree-btn {
+	#degree-chords .degree-cell {
 		flex: 0 0 auto;
-		min-width: 3.6rem;
 		scroll-snap-align: start;
+		min-width: 4.5rem;
 	}
 
 	.transpose-bar {

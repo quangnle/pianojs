@@ -26,27 +26,36 @@
 
 	<section class="degree-section">
 		<h2>Scale degrees</h2>
+		<p class="degree-hint">Drag from the library onto <strong>+ Add</strong>, or tap a chord then <strong>+ Add</strong>. × removes saved extras.</p>
 		<div id="degree-chords"></div>
 	</section>
 
-	<section class="chord-section">
-		<h2>Jazz chords — <span id="current-key-label" class="current-key-label">C major</span></h2>
-		<div class="table-wrap">
-			<table id="chord-table">
-				<thead>
-					<tr>
-						<th class="row-key">Key</th>
-						<th>I</th>
-						<th>II</th>
-						<th>III</th>
-						<th>IV</th>
-						<th>V</th>
-						<th>VI</th>
-						<th>VII</th>
-					</tr>
-				</thead>
-				<tbody id="chord-table-body"></tbody>
-			</table>
+	<section class="chord-section" id="jazz-chords-section">
+		<h2 class="chord-section-head">
+			<button type="button" id="jazz-chords-toggle" class="accordion-trigger" aria-expanded="true" aria-controls="jazz-chords-panel">
+				<span class="accordion-chevron" aria-hidden="true">▾</span>
+				<span class="accordion-title">Jazz chords — <span id="current-key-label" class="current-key-label">C major</span></span>
+			</button>
+		</h2>
+		<div id="jazz-chords-panel" class="jazz-chords-panel">
+			<p class="jazz-hint">Library: drag onto <strong>+ Add</strong> or tap chord then <strong>+ Add</strong>.</p>
+			<div class="table-wrap">
+				<table id="chord-table">
+					<thead>
+						<tr>
+							<th class="row-key">Key</th>
+							<th>I</th>
+							<th>II</th>
+							<th>III</th>
+							<th>IV</th>
+							<th>V</th>
+							<th>VI</th>
+							<th>VII</th>
+						</tr>
+					</thead>
+					<tbody id="chord-table-body"></tbody>
+				</table>
+			</div>
 		</div>
 	</section>
 

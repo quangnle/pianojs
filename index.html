@@ -34,27 +34,36 @@
 
 	<section class="degree-section">
 		<h2>Scale degrees (current key)</h2>
+		<p class="degree-hint">Drag a library chord onto <strong>+ Add</strong>, or tap a library chord then <strong>+ Add</strong> on a degree. <strong>×</strong> removes saved extras. Custom chords are stored per transpose key.</p>
 		<div id="degree-chords"></div>
 	</section>
 
-	<section class="chord-section">
-		<h2>Jazz chords — <span id="current-key-label" class="current-key-label">C major</span></h2>
-		<div class="table-wrap">
-			<table id="chord-table">
-				<thead>
-					<tr>
-						<th class="row-key">Key</th>
-						<th>I</th>
-						<th>II</th>
-						<th>III</th>
-						<th>IV</th>
-						<th>V</th>
-						<th>VI</th>
-						<th>VII</th>
-					</tr>
-				</thead>
-				<tbody id="chord-table-body"></tbody>
-			</table>
+	<section class="chord-section" id="jazz-chords-section">
+		<h2 class="chord-section-head">
+			<button type="button" id="jazz-chords-toggle" class="accordion-trigger" aria-expanded="true" aria-controls="jazz-chords-panel">
+				<span class="accordion-chevron" aria-hidden="true">▾</span>
+				<span class="accordion-title">Jazz chords — <span id="current-key-label" class="current-key-label">C major</span></span>
+			</button>
+		</h2>
+		<div id="jazz-chords-panel" class="jazz-chords-panel">
+			<p class="jazz-hint">Chord library: drag any button onto a degree’s <strong>+ Add</strong> zone, or pick a chord (tap) then <strong>+ Add</strong> on a column.</p>
+			<div class="table-wrap">
+				<table id="chord-table">
+					<thead>
+						<tr>
+							<th class="row-key">Key</th>
+							<th>I</th>
+							<th>II</th>
+							<th>III</th>
+							<th>IV</th>
+							<th>V</th>
+							<th>VI</th>
+							<th>VII</th>
+						</tr>
+					</thead>
+					<tbody id="chord-table-body"></tbody>
+				</table>
+			</div>
 		</div>
 	</section>
 </body>
