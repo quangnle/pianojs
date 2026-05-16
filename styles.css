@@ -258,12 +258,24 @@ body {
 		padding: 0.75rem 0.5rem 1.5rem;
 	}
 
+	/* One horizontal row: all seven degrees; scroll sideways on narrow screens */
 	#degree-chords {
-		grid-template-columns: repeat(4, 1fr);
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		gap: 0.35rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scroll-snap-type: x proximity;
+		padding-bottom: 0.2rem;
+		margin-inline: -0.35rem;
+		padding-inline: 0.35rem;
 	}
 
-	#degree-chords .degree-btn:nth-child(n + 5) {
-		grid-column: span 1;
+	#degree-chords .degree-btn {
+		flex: 0 0 auto;
+		min-width: 3.6rem;
+		scroll-snap-align: start;
 	}
 
 	.transpose-bar {

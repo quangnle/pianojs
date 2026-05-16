@@ -136,9 +136,20 @@ body {
 }
 
 #degree-chords {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 	gap: 0.3rem;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scroll-snap-type: x proximity;
+	padding-bottom: 0.15rem;
+}
+
+#degree-chords .degree-btn {
+	flex: 0 0 auto;
+	min-width: 3.35rem;
+	scroll-snap-align: start;
 }
 
 .degree-btn {

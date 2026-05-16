@@ -69,11 +69,32 @@ function updateCurrentKeyLabel() {
 function attachChordButtonListeners(container) {
 	const root = container || document;
 	root.querySelectorAll('.chord-btn').forEach((btn) => {
-		btn.addEventListener('click', () => {
+		let lastTouchTs = 0;
+		const activate = () => {
 			ensureAudioStarted();
 			playChord(btn.dataset.chord, 1);
 			document.querySelectorAll('.chord-btn.active').forEach((b) => b.classList.remove('active'));
 			btn.classList.add('active');
+		};
+		// iOS Safari: Web Audio must start from a touch/ pointer gesture; delayed `click` is not always treated as one.
+		btn.addEventListener(
+			'touchstart',
+			() => {
+				lastTouchTs = Date.now();
+				activate();
+			},
+			{ passive: true },
+		);
+		btn.addEventListener('click', () => {
+			if (Date.now() - lastTouchTs < 450) return;
+			activate();
+		});
+		btn.addEventListener('keydown', (e) => {
+			if (e.repeat) return;
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				activate();
+			}
 		});
 	});
 }

@@ -146,7 +146,10 @@ function applyTransposeToChordName(chordName) {
 }
 
 function ensureAudioStarted() {
-	if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
+	if (typeof Tone === 'undefined') return;
+	// Begin resume synchronously inside the user-gesture stack (e.g. touchstart); Tone.start() completes async.
+	if (Tone.context.state !== 'running') {
+		void Tone.context.resume();
 		Tone.start();
 	}
 }
