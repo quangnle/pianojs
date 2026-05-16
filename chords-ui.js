@@ -14,7 +14,8 @@ const DEGREE_LABELS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 /** Scale degrees (0-based) that show diatonic minor + parallel major + dom7 (e.g. in C: Dm, D, D7). */
 const DEGREE_MAJOR_DOM7_INDICES = new Set([1, 2, 5]);
 
-const LS_SLOT_CUSTOM = 'pianojs-degree-slot-customs-v1';
+const LS_SLOT_CUSTOM = 'pianojs-degree-slot-customs-v2';
+const LS_SLOT_CUSTOM_LEGACY = 'pianojs-degree-slot-customs-v1';
 const LS_JAZZ_COLLAPSED = 'pianojs-jazz-panel-collapsed';
 
 let pickedLibChord = null;
@@ -52,39 +53,87 @@ function emptySevenRows() {
 	return [[], [], [], [], [], [], []];
 }
 
-function readSlotCustomRows() {
-	try {
-		const raw = localStorage.getItem(LS_SLOT_CUSTOM);
-		const all = raw ? JSON.parse(raw) : {};
-		const k = String(getGlobalTranspose());
-		let rows = all[k];
-		if (!Array.isArray(rows) || rows.length !== 7) {
-			rows = emptySevenRows();
-		} else {
-			rows = rows.map((r) => (Array.isArray(r) ? r.slice() : []));
+/** Split chord label into root note and type suffix (e.g. D9 → D, 9). */
+function parseChordRootAndSuffix(chordName) {
+	let root = chordName[0];
+	let suffix = chordName.slice(1);
+	if (chordName[1] === '#' || chordName[1] === 'b') {
+		root += chordName[1];
+		suffix = chordName.slice(2);
+	}
+	return { root, suffix: suffix.replace(/\s/g, '') };
+}
+
+function getDefaultSuffixesForDegree(degreeIndex) {
+	if (DEGREE_MAJOR_DOM7_INDICES.has(degreeIndex)) {
+		return new Set([MajChords[degreeIndex][0], '', '7']);
+	}
+	return new Set([MajChords[degreeIndex][0]]);
+}
+
+function migrateLegacySlotStorage(legacyAll) {
+	const merged = emptySevenRows();
+	if (!legacyAll || typeof legacyAll !== 'object') return merged;
+	for (const transposeKey of Object.keys(legacyAll)) {
+		const rows = legacyAll[transposeKey];
+		if (!Array.isArray(rows) || rows.length !== 7) continue;
+		const t = parseFloat(transposeKey);
+		if (Number.isNaN(t)) continue;
+		for (let i = 0; i < 7; i++) {
+			const list = rows[i];
+			if (!Array.isArray(list)) continue;
+			const defaultSuffixes = getDefaultSuffixesForDegree(i);
+			for (let j = 0; j < list.length; j++) {
+				const chord = list[j];
+				if (typeof chord !== 'string' || !chord.length) continue;
+				const { suffix } = parseChordRootAndSuffix(chord);
+				if (!suffix || defaultSuffixes.has(suffix)) continue;
+				if (!merged[i].includes(suffix)) merged[i].push(suffix);
+			}
 		}
-		const root = getCurrentKey();
-		return rows.map((list, i) => {
-			const defs = new Set(getDefaultChordNamesForDegree(root, i));
-			return list.filter((c) => typeof c === 'string' && c.length && !defs.has(c));
-		});
+	}
+	return merged;
+}
+
+/** Custom chord types per degree (suffix only); follows transpose via degree root. */
+function readSlotCustomSuffixRows() {
+	try {
+		let raw = localStorage.getItem(LS_SLOT_CUSTOM);
+		let parsed = raw ? JSON.parse(raw) : null;
+		if (!parsed || !Array.isArray(parsed.suffixes) || parsed.suffixes.length !== 7) {
+			const legacyRaw = localStorage.getItem(LS_SLOT_CUSTOM_LEGACY);
+			const legacyAll = legacyRaw ? JSON.parse(legacyRaw) : null;
+			parsed = { suffixes: migrateLegacySlotStorage(legacyAll) };
+			localStorage.setItem(LS_SLOT_CUSTOM, JSON.stringify(parsed));
+		}
+		return parsed.suffixes.map((r) => (Array.isArray(r) ? r.filter((s) => typeof s === 'string' && s.length) : []));
 	} catch {
 		return emptySevenRows();
 	}
 }
 
-function writeSlotCustomRows(rows) {
+function writeSlotCustomSuffixRows(rows) {
 	try {
-		const raw = localStorage.getItem(LS_SLOT_CUSTOM);
-		const all = raw ? JSON.parse(raw) : {};
-		all[String(getGlobalTranspose())] = rows.map((r) => r.slice());
-		localStorage.setItem(LS_SLOT_CUSTOM, JSON.stringify(all));
+		localStorage.setItem(LS_SLOT_CUSTOM, JSON.stringify({ suffixes: rows.map((r) => r.slice()) }));
 	} catch (_) {}
 }
 
-function mergedChordNamesForDegree(root, i, customRows) {
+function customChordNamesForDegree(root, degreeIndex, suffixRows) {
+	const note = transpose(root, DEGREE_OFFSETS[degreeIndex]);
+	const list = suffixRows[degreeIndex] || [];
+	const defaultSuffixes = getDefaultSuffixesForDegree(degreeIndex);
+	const out = [];
+	for (let i = 0; i < list.length; i++) {
+		const suffix = list[i];
+		if (defaultSuffixes.has(suffix)) continue;
+		out.push(buildChordName(note, suffix));
+	}
+	return out;
+}
+
+function mergedChordNamesForDegree(root, i, suffixRows) {
 	const defaults = getDefaultChordNamesForDegree(root, i);
-	const customs = customRows[i] || [];
+	const customs = customChordNamesForDegree(root, i, suffixRows);
 	const seen = new Set();
 	const out = [];
 	for (const c of defaults) {
@@ -102,8 +151,14 @@ function mergedChordNamesForDegree(root, i, customRows) {
 	return out;
 }
 
-function isCustomSlotChord(i, chord, customRows) {
-	return (customRows[i] || []).includes(chord);
+function isCustomSlotChord(i, chord, suffixRows) {
+	return customChordNamesForDegree(getCurrentKey(), i, suffixRows).includes(chord);
+}
+
+function chordSuffixForSlot(chordName, degreeIndex) {
+	const { suffix } = parseChordRootAndSuffix(chordName);
+	if (getDefaultSuffixesForDegree(degreeIndex).has(suffix)) return null;
+	return suffix;
 }
 
 function escapeHtmlText(s) {
@@ -222,24 +277,24 @@ function attachLibraryChordExtras(tbody) {
 }
 
 function appendChordToDegreeSlot(degreeIndex, chordName) {
-	const root = getCurrentKey();
-	const defaults = new Set(getDefaultChordNamesForDegree(root, degreeIndex));
-	if (defaults.has(chordName)) return;
-	const rows = readSlotCustomRows();
+	const suffix = chordSuffixForSlot(chordName, degreeIndex);
+	if (suffix == null) return;
+	const rows = readSlotCustomSuffixRows();
 	const list = rows[degreeIndex];
-	if (list.includes(chordName)) return;
-	list.push(chordName);
+	if (list.includes(suffix)) return;
+	list.push(suffix);
 	rows[degreeIndex] = list;
-	writeSlotCustomRows(rows);
+	writeSlotCustomSuffixRows(rows);
 	setPickedLibChord(null);
 	renderDegreeRow();
 }
 
 function removeChordFromDegreeSlot(degreeIndex, chordName) {
-	const rows = readSlotCustomRows();
-	const list = rows[degreeIndex].filter((c) => c !== chordName);
-	rows[degreeIndex] = list;
-	writeSlotCustomRows(rows);
+	const { suffix } = parseChordRootAndSuffix(chordName);
+	if (!suffix || getDefaultSuffixesForDegree(degreeIndex).has(suffix)) return;
+	const rows = readSlotCustomSuffixRows();
+	rows[degreeIndex] = rows[degreeIndex].filter((s) => s !== suffix);
+	writeSlotCustomSuffixRows(rows);
 	renderDegreeRow();
 }
 
@@ -318,7 +373,7 @@ function renderDegreeRow() {
 	const container = document.getElementById('degree-chords');
 	if (!container) return;
 	const root = getCurrentKey();
-	const customRows = readSlotCustomRows();
+	const customRows = readSlotCustomSuffixRows();
 	let html = '';
 	for (let i = 0; i < 7; i++) {
 		html += degreeCellHTML(root, i, customRows);

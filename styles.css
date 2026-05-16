@@ -63,7 +63,7 @@ body {
 #sketch-holder {
 	display: flex;
 	justify-content: center;
-	overflow: hidden;
+	overflow: visible;
 	border-radius: 8px;
 	width: 100%;
 	max-width: 640px;
@@ -603,5 +603,39 @@ body.chord-drag-active {
 
 	.transpose-bar {
 		gap: 0.75rem;
+	}
+
+	.piano-panel {
+		padding: 0.5rem 0.35rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	#sketch-holder {
+		justify-content: flex-start;
+		overflow-x: auto;
+		overflow-y: visible;
+		max-width: 100%;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.piano-root {
+		flex: 0 0 auto;
+		width: max-content;
+		min-width: 100%;
+		max-width: none;
+	}
+
+	.piano-keys-stage {
+		min-height: 7rem;
+	}
+
+	.piano-key--white {
+		flex: 0 0 1.35rem;
+		min-width: 1.35rem;
+	}
+
+	.piano-key--black {
+		min-width: 0.85rem;
 	}
 }

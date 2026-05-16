@@ -4,6 +4,15 @@
 (function () {
 	const DEFAULT_O = 3;
 	const DEFAULT_N_OCT = 3;
+	const MOBILE_N_OCT = 2;
+	const MOBILE_MQ = '(max-width: 640px)';
+
+	function getOctaveCount() {
+		if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia(MOBILE_MQ).matches) {
+			return MOBILE_N_OCT;
+		}
+		return DEFAULT_N_OCT;
+	}
 
 	function noteLabel(name, octave) {
 		return name.split('/')[0] + octave;
@@ -184,7 +193,7 @@
 		holder.innerHTML = '';
 
 		const o = DEFAULT_O;
-		const nOctave = DEFAULT_N_OCT;
+		const nOctave = getOctaveCount();
 		window.pianoui = mountPiano(holder, o, nOctave);
 		if (window.pianoui) {
 			window.pianoui.currentTranspose = getGlobalTranspose();
@@ -195,5 +204,9 @@
 		document.addEventListener('DOMContentLoaded', init);
 	} else {
 		init();
+	}
+
+	if (typeof window !== 'undefined' && window.matchMedia) {
+		window.matchMedia(MOBILE_MQ).addEventListener('change', init);
 	}
 })();
