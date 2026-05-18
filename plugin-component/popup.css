@@ -209,6 +209,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	gap: 0.75rem;
+	width: 100%;
 	margin-bottom: 0.6rem;
 	padding: 0.45rem 0.6rem;
 	background: var(--bg-panel);
@@ -248,6 +249,10 @@ body {
 	color: var(--accent-bright);
 }
 
+.degree-section {
+	width: 100%;
+}
+
 .degree-section h2 {
 	font-size: 0.65rem;
 	text-transform: uppercase;
@@ -268,30 +273,31 @@ body {
 }
 
 #degree-chords {
+	--degree-col-scale: 1;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
-	gap: 0.3rem;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-	scroll-snap-type: x proximity;
+	align-items: stretch;
+	width: 100%;
+	gap: 0.35rem;
+	overflow-x: visible;
 	padding-bottom: 0.15rem;
 }
 
 #degree-chords .degree-cell {
-	flex: 0 0 auto;
-	scroll-snap-align: start;
-	min-width: 4rem;
+	flex: 1 1 0;
+	min-width: 0;
+	max-width: none;
 }
 
 .degree-cell {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
-	gap: 0.18rem;
-	padding: 0.28rem 0.1rem;
+	gap: calc(0.18rem * var(--degree-col-scale));
+	padding: calc(0.28rem * var(--degree-col-scale)) calc(0.1rem * var(--degree-col-scale));
 	border: 1px solid var(--border);
-	border-radius: 6px;
+	border-radius: calc(6px * var(--degree-col-scale));
 	background: var(--bg-panel);
 	color: var(--text);
 	min-width: 0;
@@ -306,7 +312,7 @@ body {
 
 .degree-label {
 	align-self: center;
-	font-size: 0.58rem;
+	font-size: calc(0.58rem * var(--degree-col-scale));
 	font-weight: 700;
 	color: var(--accent-bright);
 }
@@ -314,14 +320,14 @@ body {
 .degree-slot-list {
 	display: flex;
 	flex-direction: column;
-	gap: 0.12rem;
+	gap: calc(0.12rem * var(--degree-col-scale));
 	width: 100%;
 }
 
 .degree-slot-row {
 	display: flex;
 	align-items: center;
-	gap: 0.12rem;
+	gap: calc(0.12rem * var(--degree-col-scale));
 	width: 100%;
 	min-width: 0;
 }
@@ -330,12 +336,12 @@ body {
 	flex: 1;
 	min-width: 0;
 	margin: 0;
-	padding: 0.18rem 0.08rem;
+	padding: calc(0.18rem * var(--degree-col-scale)) calc(0.08rem * var(--degree-col-scale));
 	border: 1px solid rgba(64, 145, 108, 0.4);
-	border-radius: 4px;
+	border-radius: calc(4px * var(--degree-col-scale));
 	background: var(--bg-deep);
 	color: var(--text-muted);
-	font-size: 0.5rem;
+	font-size: calc(0.5rem * var(--degree-col-scale));
 	font-family: inherit;
 	cursor: pointer;
 	transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
@@ -350,14 +356,14 @@ body {
 
 .slot-remove {
 	flex: 0 0 auto;
-	width: 1.15rem;
-	height: 1.15rem;
+	width: calc(1.15rem * var(--degree-col-scale, 1));
+	height: calc(1.15rem * var(--degree-col-scale, 1));
 	padding: 0;
 	border: 1px solid rgba(231, 111, 81, 0.45);
-	border-radius: 4px;
+	border-radius: calc(4px * var(--degree-col-scale, 1));
 	background: rgba(231, 111, 81, 0.1);
 	color: var(--danger);
-	font-size: 0.72rem;
+	font-size: calc(0.72rem * var(--degree-col-scale, 1));
 	line-height: 1;
 	cursor: pointer;
 }
@@ -366,43 +372,156 @@ body {
 	background: rgba(231, 111, 81, 0.22);
 }
 
-.degree-drop-target {
-	margin-top: 0.05rem;
-	padding: 0.22rem 0.12rem;
-	border: 1px dashed rgba(64, 145, 108, 0.5);
-	border-radius: 4px;
+.degree-add-btn {
+	margin-top: calc(0.12rem * var(--degree-col-scale, 1));
+	width: 100%;
+	padding: calc(0.22rem * var(--degree-col-scale, 1)) calc(0.1rem * var(--degree-col-scale, 1));
+	border: 1px dashed var(--border);
+	border-radius: calc(4px * var(--degree-col-scale, 1));
 	background: rgba(10, 22, 16, 0.45);
-	font-size: 0.5rem;
-	color: var(--text-muted);
-	cursor: pointer;
-	text-align: center;
-}
-
-.degree-drop-target .drop-target-plus {
-	font-weight: 700;
 	color: var(--accent-bright);
-	margin-right: 0.12rem;
+	font-size: calc(0.52rem * var(--degree-col-scale, 1));
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
 }
 
-.degree-drop-target .drop-target-hint {
-	display: block;
-	margin-top: 0.12rem;
-	font-size: 0.48rem;
-	line-height: 1.2;
-}
-
-.degree-drop-target .drop-target-hint.muted {
-	opacity: 0.75;
-}
-
-.degree-drop-target.drop-target-active {
-	border-color: var(--accent-bright);
-}
-
-.degree-drop-target.degree-drop-hover {
+.degree-add-btn:hover {
 	background: rgba(45, 106, 79, 0.35);
 	border-color: var(--accent-bright);
 	border-style: solid;
+	box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.chord-picker-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem;
+	background: rgba(5, 12, 8, 0.72);
+	backdrop-filter: blur(4px);
+}
+
+.chord-picker-overlay[hidden] {
+	display: none;
+}
+
+.chord-picker-dialog {
+	width: 100%;
+	max-width: 320px;
+	max-height: 85vh;
+	display: flex;
+	flex-direction: column;
+	padding: 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-deep) 100%);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.chord-picker-title {
+	margin: 0 0 0.25rem;
+	font-size: 0.85rem;
+	color: var(--accent-bright);
+}
+
+.chord-picker-sub {
+	margin: 0 0 0.5rem;
+	font-size: 0.62rem;
+	color: var(--text-muted);
+	line-height: 1.35;
+}
+
+.chord-picker-list {
+	flex: 1;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-bottom: 0.6rem;
+	padding-right: 0.15rem;
+}
+
+.chord-picker-item {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.35rem 0.4rem;
+	border: 1px solid rgba(64, 145, 108, 0.35);
+	border-radius: 6px;
+	background: rgba(10, 22, 16, 0.5);
+	cursor: pointer;
+	font-size: 0.72rem;
+}
+
+.chord-picker-item:hover:not(.is-default) {
+	border-color: var(--accent-bright);
+	background: rgba(45, 106, 79, 0.25);
+}
+
+.chord-picker-item.is-default {
+	opacity: 0.75;
+	cursor: default;
+}
+
+.chord-picker-check {
+	flex: 0 0 auto;
+	width: 0.9rem;
+	height: 0.9rem;
+	accent-color: var(--accent-bright);
+}
+
+.chord-picker-name {
+	flex: 1;
+	color: var(--text);
+}
+
+.picker-tag {
+	font-size: 0.55rem;
+	color: var(--text-muted);
+	font-weight: 400;
+}
+
+.chord-picker-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	justify-content: flex-end;
+}
+
+.chord-picker-primary,
+.chord-picker-secondary {
+	padding: 0.35rem 0.55rem;
+	border-radius: 6px;
+	font-size: 0.65rem;
+	font-family: inherit;
+	cursor: pointer;
+	border: 1px solid var(--border);
+}
+
+.chord-picker-primary {
+	background: var(--accent);
+	color: var(--text);
+	border-color: var(--accent-bright);
+	font-weight: 600;
+}
+
+.chord-picker-primary:hover {
+	background: var(--accent-bright);
+	color: var(--bg-deep);
+}
+
+.chord-picker-secondary {
+	background: var(--bg-deep);
+	color: var(--text-muted);
+}
+
+.chord-picker-secondary:hover {
+	border-color: var(--accent-bright);
+	color: var(--text);
 }
 
 .chord-section {

@@ -103,9 +103,6 @@ function setGlobalTranspose(val) {
 	if (typeof updateTransposeDisplay === 'function') {
 		updateTransposeDisplay();
 	}
-	if (typeof renderChordTable === 'function') {
-		renderChordTable();
-	}
 	if (typeof renderDegreeRow === 'function') {
 		renderDegreeRow();
 	}

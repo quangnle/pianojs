@@ -11,14 +11,12 @@ const MajChords = [
 
 const DEGREE_OFFSETS = [0, 1, 2, 2.5, 3.5, 4.5, 5.5];
 const DEGREE_LABELS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
-/** Scale degrees (0-based) that show diatonic minor + parallel major + dom7 (e.g. in C: Dm, D, D7). */
 const DEGREE_MAJOR_DOM7_INDICES = new Set([1, 2, 5]);
 
 const LS_SLOT_CUSTOM = 'pianojs-degree-slot-customs-v2';
 const LS_SLOT_CUSTOM_LEGACY = 'pianojs-degree-slot-customs-v1';
-const LS_JAZZ_COLLAPSED = 'pianojs-jazz-panel-collapsed';
 
-let pickedLibChord = null;
+let pickerDegreeIndex = null;
 
 function buildChordName(note, suffix) {
 	let chord = note.split('/')[0] + suffix;
@@ -53,7 +51,6 @@ function emptySevenRows() {
 	return [[], [], [], [], [], [], []];
 }
 
-/** Split chord label into root note and type suffix (e.g. D9 → D, 9). */
 function parseChordRootAndSuffix(chordName) {
 	let root = chordName[0];
 	let suffix = chordName.slice(1);
@@ -77,8 +74,6 @@ function migrateLegacySlotStorage(legacyAll) {
 	for (const transposeKey of Object.keys(legacyAll)) {
 		const rows = legacyAll[transposeKey];
 		if (!Array.isArray(rows) || rows.length !== 7) continue;
-		const t = parseFloat(transposeKey);
-		if (Number.isNaN(t)) continue;
 		for (let i = 0; i < 7; i++) {
 			const list = rows[i];
 			if (!Array.isArray(list)) continue;
@@ -95,7 +90,6 @@ function migrateLegacySlotStorage(legacyAll) {
 	return merged;
 }
 
-/** Custom chord types per degree (suffix only); follows transpose via degree root. */
 function readSlotCustomSuffixRows() {
 	try {
 		let raw = localStorage.getItem(LS_SLOT_CUSTOM);
@@ -169,56 +163,51 @@ function escapeHtmlText(s) {
 		.replace(/"/g, '&quot;');
 }
 
-function chordButtonHTML(chord) {
-	const safe = String(chord).replace(/"/g, '&quot;');
-	return `<button type="button" class="chord-btn chord-lib-btn" draggable="true" data-chord="${safe}">${chord}</button>`;
-}
-
-function colString(note, group) {
-	let st = '<td>';
-	for (let i = 0; i < group.length; i++) {
-		const chord = buildChordName(note, group[i]);
-		st += chordButtonHTML(chord);
+function chordOptionsForDegree(degreeIndex) {
+	const root = getCurrentKey();
+	const note = transpose(root, DEGREE_OFFSETS[degreeIndex]);
+	const suffixes = MajChords[degreeIndex] || [];
+	const seen = new Set();
+	const options = [];
+	for (let i = 0; i < suffixes.length; i++) {
+		const chord = buildChordName(note, suffixes[i]);
+		if (seen.has(chord)) continue;
+		seen.add(chord);
+		options.push(chord);
 	}
-	st += '</td>';
-	return st;
+	return options;
 }
 
-function rowString(note) {
-	let st = '<tr><th class="row-key">' + note.split('/')[0] + '</th>';
-	st += colString(note, MajChords[0]);
-	st += colString(transpose(note, 1), MajChords[1]);
-	st += colString(transpose(note, 2), MajChords[2]);
-	st += colString(transpose(note, 2.5), MajChords[3]);
-	st += colString(transpose(note, 3.5), MajChords[4]);
-	st += colString(transpose(note, 4.5), MajChords[5]);
-	st += colString(transpose(note, 5.5), MajChords[6]);
-	st += '</tr>';
-	return st;
+function appendChordsToDegreeSlot(degreeIndex, chordNames) {
+	const rows = readSlotCustomSuffixRows();
+	let changed = false;
+	for (let i = 0; i < chordNames.length; i++) {
+		const suffix = chordSuffixForSlot(chordNames[i], degreeIndex);
+		if (suffix == null) continue;
+		const list = rows[degreeIndex];
+		if (!list.includes(suffix)) {
+			list.push(suffix);
+			changed = true;
+		}
+	}
+	if (changed) {
+		writeSlotCustomSuffixRows(rows);
+		renderDegreeRow();
+	}
 }
 
-function buildChordTableHTML() {
-	return rowString(getCurrentKey());
+function removeChordFromDegreeSlot(degreeIndex, chordName) {
+	const { suffix } = parseChordRootAndSuffix(chordName);
+	if (!suffix || getDefaultSuffixesForDegree(degreeIndex).has(suffix)) return;
+	const rows = readSlotCustomSuffixRows();
+	rows[degreeIndex] = rows[degreeIndex].filter((s) => s !== suffix);
+	writeSlotCustomSuffixRows(rows);
+	renderDegreeRow();
 }
 
 function updateCurrentKeyLabel() {
 	const el = document.getElementById('current-key-label');
-	if (el) {
-		el.textContent = getCurrentKeyLabel();
-	}
-}
-
-function setPickedLibChord(name) {
-	pickedLibChord = name || null;
-	document.querySelectorAll('.chord-lib-btn.lib-picked').forEach((b) => b.classList.remove('lib-picked'));
-	if (pickedLibChord) {
-		document.querySelectorAll('.chord-lib-btn').forEach((b) => {
-			if (b.dataset.chord === pickedLibChord) b.classList.add('lib-picked');
-		});
-	}
-	document.querySelectorAll('.degree-drop-target').forEach((el) => {
-		el.classList.toggle('drop-target-active', !!pickedLibChord);
-	});
+	if (el) el.textContent = getCurrentKeyLabel();
 }
 
 function attachChordPlayListeners(root) {
@@ -233,14 +222,7 @@ function attachChordPlayListeners(root) {
 			document.querySelectorAll('.chord-btn.active').forEach((b) => b.classList.remove('active'));
 			btn.classList.add('active');
 		};
-		btn.addEventListener(
-			'touchstart',
-			() => {
-				lastTouchTs = Date.now();
-				activate();
-			},
-			{ passive: true },
-		);
+		btn.addEventListener('touchstart', () => { lastTouchTs = Date.now(); activate(); }, { passive: true });
 		btn.addEventListener('click', () => {
 			if (Date.now() - lastTouchTs < 450) return;
 			activate();
@@ -255,47 +237,94 @@ function attachChordPlayListeners(root) {
 	});
 }
 
-function attachLibraryChordExtras(tbody) {
-	if (!tbody) return;
-	tbody.querySelectorAll('.chord-lib-btn').forEach((btn) => {
-		btn.addEventListener('dragstart', (e) => {
-			const chord = btn.dataset.chord || '';
-			try {
-				e.dataTransfer.setData('text/plain', chord);
-				e.dataTransfer.effectAllowed = 'copy';
-			} catch (_) {}
-			document.body.classList.add('chord-drag-active');
-			setPickedLibChord(chord);
-		});
-		btn.addEventListener('dragend', () => {
-			document.body.classList.remove('chord-drag-active');
-		});
-		const markPicked = () => setPickedLibChord(btn.dataset.chord);
-		btn.addEventListener('touchend', markPicked, { passive: true });
-		btn.addEventListener('click', markPicked);
+function closeChordPicker() {
+	const overlay = document.getElementById('chord-picker-overlay');
+	if (!overlay) return;
+	overlay.hidden = true;
+	overlay.setAttribute('aria-hidden', 'true');
+	pickerDegreeIndex = null;
+}
+
+function openChordPicker(degreeIndex) {
+	const overlay = document.getElementById('chord-picker-overlay');
+	const listEl = document.getElementById('chord-picker-list');
+	const titleEl = document.getElementById('chord-picker-title');
+	if (!overlay || !listEl || !titleEl) return;
+
+	pickerDegreeIndex = degreeIndex;
+	const root = getCurrentKey();
+	const label = DEGREE_LABELS[degreeIndex];
+	const customRows = readSlotCustomSuffixRows();
+	const defaults = new Set(getDefaultChordNamesForDegree(root, degreeIndex));
+	const customs = new Set(customChordNamesForDegree(root, degreeIndex, customRows));
+	const options = chordOptionsForDegree(degreeIndex);
+
+	titleEl.textContent = 'Add chords — ' + label + ' (' + root + ')';
+
+	let html = '';
+	for (let i = 0; i < options.length; i++) {
+		const chord = options[i];
+		const safe = escapeHtmlText(chord);
+		const isDefault = defaults.has(chord);
+		const isCustom = customs.has(chord);
+		const checked = isDefault || isCustom;
+		const disabled = isDefault;
+		const note = isDefault ? ' <span class="picker-tag">default</span>' : isCustom ? ' <span class="picker-tag">added</span>' : '';
+		html += `<label class="chord-picker-item${disabled ? ' is-default' : ''}">
+			<input type="checkbox" class="chord-picker-check" value="${safe}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''} />
+			<span class="chord-picker-name">${safe}${note}</span>
+		</label>`;
+	}
+	listEl.innerHTML = html;
+
+	overlay.hidden = false;
+	overlay.setAttribute('aria-hidden', 'false');
+}
+
+function bindChordPickerUI() {
+	const overlay = document.getElementById('chord-picker-overlay');
+	const confirmBtn = document.getElementById('chord-picker-confirm');
+	const cancelBtn = document.getElementById('chord-picker-cancel');
+	const selectAllBtn = document.getElementById('chord-picker-select-all');
+	const clearBtn = document.getElementById('chord-picker-clear');
+	if (!overlay) return;
+
+	overlay.addEventListener('click', (e) => {
+		if (e.target === overlay) closeChordPicker();
 	});
-}
 
-function appendChordToDegreeSlot(degreeIndex, chordName) {
-	const suffix = chordSuffixForSlot(chordName, degreeIndex);
-	if (suffix == null) return;
-	const rows = readSlotCustomSuffixRows();
-	const list = rows[degreeIndex];
-	if (list.includes(suffix)) return;
-	list.push(suffix);
-	rows[degreeIndex] = list;
-	writeSlotCustomSuffixRows(rows);
-	setPickedLibChord(null);
-	renderDegreeRow();
-}
+	if (cancelBtn) cancelBtn.addEventListener('click', closeChordPicker);
 
-function removeChordFromDegreeSlot(degreeIndex, chordName) {
-	const { suffix } = parseChordRootAndSuffix(chordName);
-	if (!suffix || getDefaultSuffixesForDegree(degreeIndex).has(suffix)) return;
-	const rows = readSlotCustomSuffixRows();
-	rows[degreeIndex] = rows[degreeIndex].filter((s) => s !== suffix);
-	writeSlotCustomSuffixRows(rows);
-	renderDegreeRow();
+	if (confirmBtn) {
+		confirmBtn.addEventListener('click', () => {
+			if (pickerDegreeIndex == null) return;
+			const customs = new Set(
+				customChordNamesForDegree(getCurrentKey(), pickerDegreeIndex, readSlotCustomSuffixRows()),
+			);
+			const selected = [];
+			overlay.querySelectorAll('.chord-picker-check:not(:disabled)').forEach((cb) => {
+				if (cb.checked && cb.value && !customs.has(cb.value)) selected.push(cb.value);
+			});
+			appendChordsToDegreeSlot(pickerDegreeIndex, selected);
+			closeChordPicker();
+		});
+	}
+
+	if (selectAllBtn) {
+		selectAllBtn.addEventListener('click', () => {
+			overlay.querySelectorAll('.chord-picker-check:not(:disabled)').forEach((cb) => {
+				cb.checked = true;
+			});
+		});
+	}
+
+	if (clearBtn) {
+		clearBtn.addEventListener('click', () => {
+			overlay.querySelectorAll('.chord-picker-check:not(:disabled)').forEach((cb) => {
+				cb.checked = false;
+			});
+		});
+	}
 }
 
 function degreeCellHTML(root, i, customRows) {
@@ -307,55 +336,24 @@ function degreeCellHTML(root, i, customRows) {
 		const safe = String(ch).replace(/"/g, '&quot;');
 		const isCust = isCustomSlotChord(i, ch, customRows);
 		const removeBtn = isCust
-			? `<button type="button" class="slot-remove" data-degree="${i}" data-chord="${safe}" aria-label="Remove ${safe} from slot">×</button>`
+			? `<button type="button" class="slot-remove" data-degree="${i}" data-chord="${safe}" aria-label="Remove ${safe}">×</button>`
 			: '';
 		chips += `<div class="degree-slot-row">
 			<button type="button" class="degree-slot-btn chord-btn" data-chord="${safe}">${ch}</button>${removeBtn}
 		</div>`;
 	}
-	const pickHint = pickedLibChord
-		? `<span class="drop-target-hint">Add “${escapeHtmlText(pickedLibChord)}”</span>`
-		: '<span class="drop-target-hint muted">Tap a library chord, then +</span>';
 	return `<div class="degree-cell" data-degree="${i}">
 		<span class="degree-label">${label}</span>
 		<div class="degree-slot-list">${chips}</div>
-		<div class="degree-drop-target" data-degree="${i}" role="button" tabindex="0" aria-label="Add chord to ${label}">
-			<span class="drop-target-plus">+</span> Add
-			${pickHint}
-		</div>
+		<button type="button" class="degree-add-btn" data-degree="${i}" aria-label="Add chords to ${label}">+ Add</button>
 	</div>`;
 }
 
 function bindDegreeSlotUI(container) {
-	container.querySelectorAll('.degree-drop-target').forEach((zone) => {
-		const deg = parseInt(zone.dataset.degree, 10);
-		if (Number.isNaN(deg)) return;
-		zone.addEventListener('click', (e) => {
-			if (e.target.closest('.slot-remove')) return;
-			if (pickedLibChord) appendChordToDegreeSlot(deg, pickedLibChord);
-		});
-		zone.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				if (pickedLibChord) appendChordToDegreeSlot(deg, pickedLibChord);
-			}
-		});
-		zone.addEventListener('dragover', (e) => {
-			e.preventDefault();
-			try {
-				e.dataTransfer.dropEffect = 'copy';
-			} catch (_) {}
-			zone.classList.add('degree-drop-hover');
-		});
-		zone.addEventListener('dragleave', () => zone.classList.remove('degree-drop-hover'));
-		zone.addEventListener('drop', (e) => {
-			e.preventDefault();
-			zone.classList.remove('degree-drop-hover');
-			let chord = '';
-			try {
-				chord = e.dataTransfer.getData('text/plain');
-			} catch (_) {}
-			if (chord) appendChordToDegreeSlot(deg, chord.trim());
+	container.querySelectorAll('.degree-add-btn').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const deg = parseInt(btn.dataset.degree, 10);
+			if (!Number.isNaN(deg)) openChordPicker(deg);
 		});
 	});
 	container.querySelectorAll('.slot-remove').forEach((btn) => {
@@ -381,20 +379,6 @@ function renderDegreeRow() {
 	container.innerHTML = html;
 	attachChordPlayListeners(container);
 	bindDegreeSlotUI(container);
-	setPickedLibChord(pickedLibChord);
-}
-
-function renderChordTable() {
-	const tbody = document.getElementById('chord-table-body');
-	if (!tbody) return;
-	tbody.innerHTML = buildChordTableHTML();
-	attachChordPlayListeners(tbody);
-	attachLibraryChordExtras(tbody);
-	updateCurrentKeyLabel();
-}
-
-function initChordTable() {
-	renderChordTable();
 }
 
 function formatTransposeValue(val) {
@@ -404,9 +388,7 @@ function formatTransposeValue(val) {
 
 function updateTransposeDisplay() {
 	const el = document.getElementById('transpose-value');
-	if (el) {
-		el.textContent = formatTransposeValue(getGlobalTranspose());
-	}
+	if (el) el.textContent = formatTransposeValue(getGlobalTranspose());
 	updateCurrentKeyLabel();
 }
 
@@ -425,38 +407,10 @@ function initTransposeUI() {
 	updateTransposeDisplay();
 }
 
-function initJazzAccordion() {
-	const section = document.getElementById('jazz-chords-section');
-	const btn = document.getElementById('jazz-chords-toggle');
-	const panel = document.getElementById('jazz-chords-panel');
-	if (!section || !btn || !panel) return;
-
-	const applyCollapsed = (collapsed) => {
-		section.classList.toggle('is-collapsed', collapsed);
-		btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-		try {
-			localStorage.setItem(LS_JAZZ_COLLAPSED, collapsed ? '1' : '0');
-		} catch (_) {}
-	};
-
-	let collapsed = false;
-	try {
-		collapsed = localStorage.getItem(LS_JAZZ_COLLAPSED) === '1';
-	} catch (_) {}
-	applyCollapsed(collapsed);
-
-	btn.addEventListener('click', () => applyCollapsed(!section.classList.contains('is-collapsed')));
-}
-
 function initAppUI() {
 	initTransposeUI();
-	initJazzAccordion();
-	if (document.getElementById('chord-table-body')) {
-		initChordTable();
-	}
-	if (document.getElementById('degree-chords')) {
-		renderDegreeRow();
-	}
+	bindChordPickerUI();
+	if (document.getElementById('degree-chords')) renderDegreeRow();
 }
 
 if (document.readyState === 'loading') {
