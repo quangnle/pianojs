@@ -166,6 +166,10 @@ function clearChordHighlightOnPiano() {
 }
 
 function playSound(keys, delay) {
+	if (typeof playSoundPlayback === 'function') {
+		playSoundPlayback(keys, delay);
+		return;
+	}
 	ensureAudioStarted();
 	clearChordHighlightOnPiano();
 	const list = Array.isArray(keys) ? keys : [keys];
@@ -176,8 +180,11 @@ function playSound(keys, delay) {
 }
 
 function playChord(name, delay) {
+	if (typeof playChordPlayback === 'function') {
+		playChordPlayback(name, delay);
+		return;
+	}
 	ensureAudioStarted();
-	// Chord labels already use getCurrentKey() — do not transpose the name again
 	const keys = getKeysFromChord(name);
 	highlightChordOnPiano(keys);
 	Tone.loaded().then(() => {

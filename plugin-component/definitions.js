@@ -1,4 +1,3 @@
-// Sync with root definitions.js
 const Vol = new Tone.Volume().toDestination();
 Vol.volume.value = 5;
 const Sampler = new Tone.Sampler({
@@ -103,6 +102,9 @@ function setGlobalTranspose(val) {
 	if (typeof updateTransposeDisplay === 'function') {
 		updateTransposeDisplay();
 	}
+	if (typeof renderChordTable === 'function') {
+		renderChordTable();
+	}
 	if (typeof renderDegreeRow === 'function') {
 		renderDegreeRow();
 	}
@@ -164,6 +166,10 @@ function clearChordHighlightOnPiano() {
 }
 
 function playSound(keys, delay) {
+	if (typeof playSoundPlayback === 'function') {
+		playSoundPlayback(keys, delay);
+		return;
+	}
 	ensureAudioStarted();
 	clearChordHighlightOnPiano();
 	const list = Array.isArray(keys) ? keys : [keys];
@@ -174,8 +180,11 @@ function playSound(keys, delay) {
 }
 
 function playChord(name, delay) {
+	if (typeof playChordPlayback === 'function') {
+		playChordPlayback(name, delay);
+		return;
+	}
 	ensureAudioStarted();
-	// Chord labels already use getCurrentKey() — do not transpose the name again
 	const keys = getKeysFromChord(name);
 	highlightChordOnPiano(keys);
 	Tone.loaded().then(() => {

@@ -8,6 +8,9 @@
 	<link rel="stylesheet" href="styles.css" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.74/Tone.js"></script>
 	<script src="definitions.js"></script>
+	<script src="chord-voicing.js"></script>
+	<script src="arpeggio-patterns.js"></script>
+	<script src="playback.js"></script>
 	<script src="piano_dom.js"></script>
 	<script src="chords-ui.js"></script>
 </head>
@@ -22,12 +25,30 @@
 		<div id="sketch-holder"></div>
 	</section>
 
-	<div class="transpose-bar">
-		<label for="transpose-value">Transpose</label>
-		<button type="button" id="transpose-down" aria-label="Transpose down">−</button>
-		<span id="transpose-value">0</span>
-		<button type="button" id="transpose-up" aria-label="Transpose up">+</button>
-	</div>
+	<section class="playback-panel" id="playback-panel" aria-label="Playback settings">
+		<div class="playback-panel__group playback-panel__transpose">
+			<span class="playback-panel__label">Transpose</span>
+			<button type="button" id="transpose-down" aria-label="Transpose down">−</button>
+			<span id="transpose-value" class="playback-panel__value">0</span>
+			<button type="button" id="transpose-up" aria-label="Transpose up">+</button>
+		</div>
+		<fieldset class="playback-panel__group accomp-mode-group">
+			<legend>Accompaniment</legend>
+			<label><input type="radio" name="accomp-mode" id="accomp-mode-block" value="block" checked /> Block</label>
+			<label><input type="radio" name="accomp-mode" id="accomp-mode-arpeggio" value="arpeggio" /> Arpeggio</label>
+		</fieldset>
+		<fieldset class="playback-panel__group accomp-style-group" id="accomp-style-group" hidden>
+			<legend>Style</legend>
+			<label><input type="radio" name="accomp-style" id="accomp-style-ballad" value="ballad" checked /> Ballad 4/4</label>
+			<label><input type="radio" name="accomp-style" id="accomp-style-waltz" value="waltz" /> Waltz 3/4</label>
+		</fieldset>
+		<div class="playback-panel__group playback-panel__tempo">
+			<label class="accomp-bpm-label" for="accomp-bpm">Tempo</label>
+			<input type="range" id="accomp-bpm" min="50" max="200" value="72" aria-valuemin="50" aria-valuemax="200" aria-valuenow="72" />
+			<span id="accomp-bpm-value" class="accomp-bpm-value" aria-live="polite">72</span>
+		</div>
+		<button type="button" id="accomp-stop" class="accomp-stop-btn playback-panel__stop">Stop</button>
+	</section>
 
 	<section class="degree-section">
 		<h2>Scale degrees (current key)</h2>
