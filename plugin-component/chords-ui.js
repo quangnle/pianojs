@@ -208,6 +208,10 @@ function removeChordFromDegreeSlot(degreeIndex, chordName) {
 function updateCurrentKeyLabel() {
 	const el = document.getElementById('current-key-label');
 	if (el) el.textContent = getCurrentKeyLabel();
+	const jazzKey = document.getElementById('jazzify-key');
+	if (jazzKey && typeof getCurrentKey === 'function') {
+		jazzKey.value = getCurrentKey();
+	}
 }
 
 function attachChordPlayListeners(root) {
@@ -339,7 +343,7 @@ function degreeCellHTML(root, i, customRows) {
 			? `<button type="button" class="slot-remove" data-degree="${i}" data-chord="${safe}" aria-label="Remove ${safe}">×</button>`
 			: '';
 		chips += `<div class="degree-slot-row">
-			<button type="button" class="degree-slot-btn chord-btn" data-chord="${safe}">${ch}</button>${removeBtn}
+			<button type="button" class="degree-slot-btn chord-btn" data-chord="${safe}" draggable="true">${ch}</button>${removeBtn}
 		</div>`;
 	}
 	return `<div class="degree-cell" data-degree="${i}">

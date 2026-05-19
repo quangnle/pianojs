@@ -206,6 +206,10 @@ function updateCurrentKeyLabel() {
 	if (el) {
 		el.textContent = getCurrentKeyLabel();
 	}
+	const jazzKey = document.getElementById('jazzify-key');
+	if (jazzKey && typeof getCurrentKey === 'function') {
+		jazzKey.value = getCurrentKey();
+	}
 }
 
 function setPickedLibChord(name) {
@@ -310,7 +314,7 @@ function degreeCellHTML(root, i, customRows) {
 			? `<button type="button" class="slot-remove" data-degree="${i}" data-chord="${safe}" aria-label="Remove ${safe} from slot">×</button>`
 			: '';
 		chips += `<div class="degree-slot-row">
-			<button type="button" class="degree-slot-btn chord-btn" data-chord="${safe}">${ch}</button>${removeBtn}
+			<button type="button" class="degree-slot-btn chord-btn" data-chord="${safe}" draggable="true">${ch}</button>${removeBtn}
 		</div>`;
 	}
 	const pickHint = pickedLibChord

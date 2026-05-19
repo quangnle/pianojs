@@ -42,11 +42,37 @@
 		<button type="button" id="accomp-stop" class="accomp-stop-btn playback-panel__stop">Stop</button>
 	</section>
 
-	<section class="degree-section">
-		<h2>Scale degrees — <span id="current-key-label" class="current-key-label">C major</span></h2>
-		<p class="degree-hint">Tap <strong>+ Add</strong> on a column to pick chords (multi-select). × removes extras.</p>
-		<div id="degree-chords"></div>
-	</section>
+	<nav class="app-tabs" role="tablist" aria-label="Main views">
+		<button type="button" class="app-tab is-active" role="tab" data-tab="practice" aria-selected="true">Practice</button>
+		<button type="button" class="app-tab" role="tab" data-tab="jazzify" aria-selected="false">Jazzify</button>
+	</nav>
+
+	<div id="tab-panel-practice" class="tab-panel" role="tabpanel">
+		<section class="degree-section">
+			<h2>Scale degrees — <span id="current-key-label" class="current-key-label">C major</span></h2>
+			<p class="degree-hint">Tap <strong>+ Add</strong> or drag chords to Jazzify. × removes extras.</p>
+			<div id="degree-chords"></div>
+		</section>
+	</div>
+
+	<div id="tab-panel-jazzify" class="tab-panel is-hidden" role="tabpanel" hidden>
+		<section class="jazzify-section">
+			<h2>Jazzify</h2>
+			<p class="jazzify-hint">Drag chords here or type symbols. <strong>Jazzify</strong> inserts ii–V and passing chords (dashed). Tap to hear.</p>
+			<div id="song-progression" class="progression-strip" aria-live="polite"></div>
+			<div id="progression-drop-zone" class="progression-drop-zone">
+				<span class="progression-drop-label">Drop chords here</span>
+			</div>
+			<div class="jazzify-toolbar">
+				<label class="jazzify-key-label">Key <select id="jazzify-key"></select></label>
+				<input type="text" id="jazzify-chord-input" class="jazzify-chord-input" placeholder="C, Em, G7" />
+				<button type="button" id="jazzify-chord-add" class="jazzify-secondary-btn">Add</button>
+				<button type="button" id="jazzify-run" class="jazzify-primary-btn">Jazzify</button>
+				<button type="button" id="jazzify-clear" class="jazzify-secondary-btn">Clear</button>
+			</div>
+			<div id="jazzify-suggestions" class="jazzify-suggestions"></div>
+		</section>
+	</div>
 
 	<p class="footer-hint">Click piano keys or chords to play</p>
 
@@ -71,6 +97,8 @@
 	<script src="playback.js"></script>
 	<script src="piano_dom.js"></script>
 	<script src="chords-ui.js"></script>
+	<script src="jazzify.js"></script>
+	<script src="jazzify-ui.js"></script>
 	<script src="popup.js"></script>
 </body>
 

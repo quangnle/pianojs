@@ -762,3 +762,215 @@ body.chord-drag-active {
 	font-size: 0.65rem;
 	color: var(--text-muted);
 }
+
+.app-tabs {
+	display: flex;
+	gap: 0.3rem;
+	margin-bottom: 0.45rem;
+	padding: 0.2rem;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: rgba(10, 22, 16, 0.6);
+}
+
+.app-tab {
+	flex: 1;
+	padding: 0.35rem;
+	border: none;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.62rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.app-tab.is-active {
+	background: var(--accent);
+	color: var(--text);
+}
+
+.tab-panel.is-hidden {
+	display: none;
+}
+
+.jazzify-section h2 {
+	font-size: 0.62rem;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin: 0 0 0.35rem;
+}
+
+.jazzify-hint {
+	margin: 0 0 0.45rem;
+	font-size: 0.58rem;
+	color: var(--text-muted);
+	line-height: 1.35;
+}
+
+.progression-strip {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	min-height: 2rem;
+	padding: 0.4rem;
+	margin-bottom: 0.35rem;
+	background: var(--bg-deep);
+	border: 1px dashed rgba(64, 145, 108, 0.45);
+	border-radius: 6px;
+}
+
+.progression-empty {
+	margin: 0;
+	font-size: 0.58rem;
+	color: var(--text-muted);
+}
+
+.progression-slot {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.15rem;
+}
+
+.progression-slot-index {
+	font-size: 0.55rem;
+	color: var(--text-muted);
+}
+
+.progression-chip,
+.suggestion-chip {
+	padding: 0.22rem 0.4rem;
+	font-size: 0.55rem;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: var(--bg-panel-hover);
+	color: var(--text);
+	cursor: pointer;
+}
+
+.suggestion-chip--insert {
+	border-style: dashed;
+	font-style: italic;
+	background: rgba(45, 106, 79, 0.35);
+}
+
+.jazzify-variant-meta {
+	font-size: 0.52rem;
+	font-weight: 400;
+	color: var(--text-muted);
+}
+
+.progression-remove {
+	width: 1.1rem;
+	height: 1.1rem;
+	padding: 0;
+	border: none;
+	border-radius: 3px;
+	background: rgba(231, 111, 81, 0.2);
+	color: #f4a261;
+	font-size: 0.75rem;
+	cursor: pointer;
+}
+
+.progression-drop-zone {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2rem;
+	margin-bottom: 0.4rem;
+	border: 2px dashed rgba(82, 183, 136, 0.4);
+	border-radius: 6px;
+	font-size: 0.58rem;
+	color: var(--text-muted);
+}
+
+.progression-drop-zone.is-drag-hover {
+	border-color: var(--accent-bright);
+	background: rgba(45, 106, 79, 0.3);
+}
+
+.jazzify-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	align-items: center;
+	margin-bottom: 0.45rem;
+}
+
+.jazzify-key-label {
+	font-size: 0.58rem;
+	color: var(--text-muted);
+}
+
+.jazzify-key-label select {
+	font-size: 0.58rem;
+	padding: 0.2rem;
+}
+
+.jazzify-chord-input {
+	width: 4.5rem;
+	padding: 0.22rem 0.35rem;
+	font-size: 0.58rem;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: var(--bg-deep);
+	color: var(--text);
+}
+
+.jazzify-primary-btn {
+	padding: 0.3rem 0.55rem;
+	font-size: 0.58rem;
+	font-weight: 700;
+	border: none;
+	border-radius: 5px;
+	background: var(--accent-bright);
+	color: var(--bg-deep);
+	cursor: pointer;
+}
+
+.jazzify-secondary-btn {
+	padding: 0.28rem 0.45rem;
+	font-size: 0.55rem;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: var(--bg-panel);
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.jazzify-suggestions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.jazzify-variant {
+	padding: 0.4rem 0.5rem;
+	border: 1px solid rgba(64, 145, 108, 0.4);
+	border-radius: 6px;
+	background: var(--bg-panel);
+}
+
+.jazzify-variant-head h3 {
+	margin: 0 0 0.15rem;
+	font-size: 0.65rem;
+	color: var(--accent-bright);
+}
+
+.jazzify-variant-desc {
+	margin: 0 0 0.35rem;
+	font-size: 0.55rem;
+	color: var(--text-muted);
+}
+
+.suggestion-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	align-items: center;
+}
+
+.suggestion-arrow {
+	font-size: 0.6rem;
+	color: var(--text-muted);
+}

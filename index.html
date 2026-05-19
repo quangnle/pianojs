@@ -13,6 +13,8 @@
 	<script src="playback.js"></script>
 	<script src="piano_dom.js"></script>
 	<script src="chords-ui.js"></script>
+	<script src="jazzify.js"></script>
+	<script src="jazzify-ui.js"></script>
 </head>
 
 <body>
@@ -50,11 +52,45 @@
 		<button type="button" id="accomp-stop" class="accomp-stop-btn playback-panel__stop">Stop</button>
 	</section>
 
-	<section class="degree-section">
-		<h2>Scale degrees (current key)</h2>
-		<p class="degree-hint">Drag a library chord onto <strong>+ Add</strong>, or tap a library chord then <strong>+ Add</strong> on a degree. <strong>×</strong> removes saved extras. Custom chords are stored per transpose key.</p>
-		<div id="degree-chords"></div>
-	</section>
+	<nav class="app-tabs" role="tablist" aria-label="Main views">
+		<button type="button" class="app-tab is-active" role="tab" id="tab-btn-practice" data-tab="practice" aria-selected="true" aria-controls="tab-panel-practice">Practice</button>
+		<button type="button" class="app-tab" role="tab" id="tab-btn-jazzify" data-tab="jazzify" aria-selected="false" aria-controls="tab-panel-jazzify">Jazzify</button>
+	</nav>
+
+	<div id="tab-panel-practice" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-practice">
+		<section class="degree-section">
+			<h2>Scale degrees (current key)</h2>
+			<p class="degree-hint">Drag a library chord onto <strong>+ Add</strong>, or tap a library chord then <strong>+ Add</strong> on a degree. <strong>×</strong> removes saved extras.</p>
+			<div id="degree-chords"></div>
+		</section>
+	</div>
+
+	<div id="tab-panel-jazzify" class="tab-panel is-hidden" role="tabpanel" aria-labelledby="tab-btn-jazzify" hidden>
+		<section class="jazzify-section">
+			<h2>Jazzify a progression</h2>
+			<p class="jazzify-hint">Build your song chords below (drag from the library, or type a symbol). <strong>Jazzify</strong> inserts approach chords (ii–V, passing, dominants) and colors each slot — dashed chips are inserted. Tap to hear.</p>
+
+			<div id="song-progression" class="progression-strip" aria-live="polite"></div>
+
+			<div id="progression-drop-zone" class="progression-drop-zone">
+				<span class="progression-drop-label">Drop chords here to add</span>
+			</div>
+
+			<div class="jazzify-toolbar">
+				<label class="jazzify-key-label">Key
+					<select id="jazzify-key" aria-label="Song key"></select>
+				</label>
+				<div class="jazzify-manual-add">
+					<input type="text" id="jazzify-chord-input" class="jazzify-chord-input" placeholder="e.g. Em, Fmaj7" autocomplete="off" />
+					<button type="button" id="jazzify-chord-add" class="jazzify-secondary-btn">Add</button>
+				</div>
+				<button type="button" id="jazzify-run" class="jazzify-primary-btn">Jazzify</button>
+				<button type="button" id="jazzify-clear" class="jazzify-secondary-btn">Clear</button>
+			</div>
+
+			<div id="jazzify-suggestions" class="jazzify-suggestions"></div>
+		</section>
+	</div>
 
 	<section class="chord-section" id="jazz-chords-section">
 		<h2 class="chord-section-head">
@@ -64,7 +100,7 @@
 			</button>
 		</h2>
 		<div id="jazz-chords-panel" class="jazz-chords-panel">
-			<p class="jazz-hint">Chord library: drag any button onto a degree’s <strong>+ Add</strong> zone, or pick a chord (tap) then <strong>+ Add</strong> on a column.</p>
+			<p class="jazz-hint">Chord library: drag onto <strong>+ Add</strong> (Practice) or the <strong>drop zone</strong> (Jazzify). Tap to preview.</p>
 			<div class="table-wrap">
 				<table id="chord-table">
 					<thead>
