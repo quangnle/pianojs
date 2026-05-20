@@ -1,15 +1,16 @@
 const Vol = new Tone.Volume().toDestination();
 Vol.volume.value = 5;
-const Sampler = new Tone.Sampler({
-	urls: {
-		"C4": "C4.mp3",
-		"D#4": "Ds4.mp3",
-		"F#4": "Fs4.mp3",
-		"A4": "A4.mp3",
-	},
-	release: 1,
-	baseUrl: "https://tonejs.github.io/audio/salamander/",
-}).connect(Vol).toDestination();
+
+/** Salamander sparse set (4 notes); decoded into AudioBuffers in RAM at load time. */
+const SAMPLE_FILES = {
+	C4: 'C4.mp3',
+	'D#4': 'Ds4.mp3',
+	'F#4': 'Fs4.mp3',
+	A4: 'A4.mp3',
+};
+
+let Sampler = null;
+let samplerRamPromise = null;
 
 const NOTES = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
 
@@ -144,12 +145,102 @@ function applyTransposeToChordName(chordName) {
 	return newRoot + rest;
 }
 
+let samplesReady = false;
+let samplesLoadPromise = null;
+
+function getAudioBaseUrl() {
+	if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getURL) {
+		return chrome.runtime.getURL('audio/');
+	}
+	return 'audio/';
+}
+
 function ensureAudioStarted() {
 	if (typeof Tone === 'undefined') return;
 	// Begin resume synchronously inside the user-gesture stack (e.g. touchstart); Tone.start() completes async.
 	if (Tone.context.state !== 'running') {
 		void Tone.context.resume();
 		Tone.start();
+	}
+}
+
+function loadSampleBuffersIntoRam() {
+	if (samplerRamPromise) return samplerRamPromise;
+	samplerRamPromise = (async () => {
+		const ctx = Tone.getContext().rawContext;
+		const base = getAudioBaseUrl();
+		const entries = await Promise.all(
+			Object.entries(SAMPLE_FILES).map(async ([note, file]) => {
+				const res = await fetch(base + file);
+				if (!res.ok) throw new Error('Sample load failed: ' + base + file);
+				const arrayBuffer = await res.arrayBuffer();
+				const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+				return [note, audioBuffer];
+			}),
+		);
+		return Object.fromEntries(entries);
+	})().catch((err) => {
+		samplerRamPromise = null;
+		throw err;
+	});
+	return samplerRamPromise;
+}
+
+function ensureSamplerInstance(buffers) {
+	if (Sampler) return Sampler;
+	Sampler = new Tone.Sampler({
+		urls: buffers,
+		release: 1,
+	}).connect(Vol).toDestination();
+	return Sampler;
+}
+
+function ensureSamplerInRam() {
+	return loadSampleBuffersIntoRam().then((buffers) => ensureSamplerInstance(buffers));
+}
+
+function preloadSamples() {
+	if (typeof Tone === 'undefined') return Promise.resolve();
+	if (samplesReady) return Promise.resolve();
+	if (samplesLoadPromise) return samplesLoadPromise;
+	samplesLoadPromise = (async () => {
+		await ensureSamplerInRam();
+		ensureAudioStarted();
+		if (Tone.context.state !== 'running') {
+			await Tone.start();
+		}
+		Sampler.triggerAttackRelease('C4', 0.01, Tone.now(), 0.001);
+		samplesReady = true;
+	})().catch(() => {
+		samplesLoadPromise = null;
+	});
+	return samplesLoadPromise;
+}
+
+function initEagerSampleRamLoad() {
+	if (typeof Tone === 'undefined') return;
+	void ensureSamplerInRam();
+}
+
+function playSamplerNotes(keys, duration) {
+	if (Sampler && samplesReady && Tone.context.state === 'running') {
+		Sampler.triggerAttackRelease(keys, duration, Tone.now());
+		return;
+	}
+	void (async () => {
+		if (!Sampler) await ensureSamplerInRam();
+		ensureAudioStarted();
+		if (Tone.context.state !== 'running') await Tone.start();
+		samplesReady = true;
+		Sampler.triggerAttackRelease(keys, duration, Tone.now());
+	})();
+}
+
+if (typeof document !== 'undefined') {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initEagerSampleRamLoad);
+	} else {
+		initEagerSampleRamLoad();
 	}
 }
 
@@ -174,9 +265,7 @@ function playSound(keys, delay) {
 	clearChordHighlightOnPiano();
 	const list = Array.isArray(keys) ? keys : [keys];
 	const transposed = list.map(applyTransposeToNote);
-	Tone.loaded().then(() => {
-		Sampler.triggerAttackRelease(transposed, delay);
-	});
+	playSamplerNotes(transposed, delay);
 }
 
 function playChord(name, delay) {
@@ -187,9 +276,7 @@ function playChord(name, delay) {
 	ensureAudioStarted();
 	const keys = getKeysFromChord(name);
 	highlightChordOnPiano(keys);
-	Tone.loaded().then(() => {
-		Sampler.triggerAttackRelease(keys, delay);
-	});
+	playSamplerNotes(keys, delay);
 }
 
 function getKeysFromChordName(name) {

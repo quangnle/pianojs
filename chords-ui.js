@@ -233,6 +233,7 @@ function attachChordPlayListeners(root) {
 		let lastTouchTs = 0;
 		const activate = () => {
 			ensureAudioStarted();
+			void preloadSamples();
 			playChord(btn.dataset.chord, 1);
 			document.querySelectorAll('.chord-btn.active').forEach((b) => b.classList.remove('active'));
 			btn.classList.add('active');

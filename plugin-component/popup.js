@@ -9,7 +9,7 @@
 	}
 
 	if (typeof Tone !== 'undefined') {
-		Tone.loaded()
+		preloadSamples()
 			.then(() => setStatus('Ready — key: ' + getCurrentKey(), true))
 			.catch(() => setStatus('Sounds ready', true));
 	} else {
@@ -20,6 +20,7 @@
 		'click',
 		() => {
 			ensureAudioStarted();
+			void preloadSamples();
 		},
 		{ once: true, capture: true }
 	);

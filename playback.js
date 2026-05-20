@@ -125,9 +125,7 @@ function stopPlayback() {
 function playBlockChord(chordName, duration) {
 	const keys = getKeysFromChord(chordName);
 	if (typeof highlightChordOnPiano === 'function') highlightChordOnPiano(keys);
-	Tone.loaded().then(() => {
-		Sampler.triggerAttackRelease(keys, duration);
-	});
+	playSamplerNotes(keys, duration);
 }
 
 function startArpeggioLoop(chordName) {
@@ -139,35 +137,38 @@ function startArpeggioLoop(chordName) {
 	const loopDur = getPatternLoopDurationSec(arpeggioStyle, bpm);
 
 	ensureAudioStarted();
-	Tone.Transport.bpm.value = bpm;
-	Tone.Transport.timeSignature = arpeggioStyle === 'waltz' ? [3, 4] : [4, 4];
-
-	const noteEvents = events.map((ev) => ({
-		time: ev.timeSec,
-		note: ev.pitch,
-		duration: ev.durationSec,
-		velocity: ev.velocity,
-	}));
-
-	arpeggioPart = new Tone.Part((time, value) => {
+	preloadSamples().then(() => {
 		if (gen !== loopGeneration) return;
-		Sampler.triggerAttackRelease(value.note, value.duration, time, value.velocity);
-		scheduleHighlight(value.note, time, value.duration, gen);
-	}, noteEvents);
+		Tone.Transport.bpm.value = bpm;
+		Tone.Transport.timeSignature = arpeggioStyle === 'waltz' ? [3, 4] : [4, 4];
 
-	arpeggioPart.loop = true;
-	arpeggioPart.loopEnd = loopDur;
-	arpeggioPart.start(0);
-	Tone.Transport.start();
+		const noteEvents = events.map((ev) => ({
+			time: ev.timeSec,
+			note: ev.pitch,
+			duration: ev.durationSec,
+			velocity: ev.velocity,
+		}));
+
+		arpeggioPart = new Tone.Part((time, value) => {
+			if (gen !== loopGeneration) return;
+			Sampler.triggerAttackRelease(value.note, value.duration, time, value.velocity);
+			scheduleHighlight(value.note, time, value.duration, gen);
+		}, noteEvents);
+
+		arpeggioPart.loop = true;
+		arpeggioPart.loopEnd = loopDur;
+		arpeggioPart.start(0);
+		Tone.Transport.start();
+	});
 }
 
 function playChordPlayback(chordName, duration) {
 	ensureAudioStarted();
+	void preloadSamples();
 	if (accompanimentMode === 'arpeggio') {
 		startArpeggioLoop(chordName);
 		return;
 	}
-	stopPlayback();
 	playBlockChord(chordName, duration);
 }
 
@@ -177,9 +178,7 @@ function playSoundPlayback(keys, duration) {
 	if (typeof clearChordHighlightOnPiano === 'function') clearChordHighlightOnPiano();
 	const list = Array.isArray(keys) ? keys : [keys];
 	const transposed = list.map(applyTransposeToNote);
-	Tone.loaded().then(() => {
-		Sampler.triggerAttackRelease(transposed, duration);
-	});
+	playSamplerNotes(transposed, duration);
 }
 
 function initAccompanimentUI() {
@@ -248,8 +247,20 @@ function updateAccompanimentUI() {
 	if (styleGroup) styleGroup.hidden = accompanimentMode !== 'arpeggio';
 }
 
+function initAudioPreload() {
+	const warmup = () => {
+		void preloadSamples();
+	};
+	document.addEventListener('pointerdown', warmup, { once: true, capture: true });
+	document.addEventListener('keydown', warmup, { once: true, capture: true });
+}
+
 if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initAccompanimentUI);
+	document.addEventListener('DOMContentLoaded', () => {
+		initAccompanimentUI();
+		initAudioPreload();
+	});
 } else {
 	initAccompanimentUI();
+	initAudioPreload();
 }
